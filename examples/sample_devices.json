@@ -1,0 +1,32 @@
+[
+  {
+    "name": "leaf01",
+    "variables": {
+      "ansible_host": "172.20.20.2"
+    }
+  },
+  {
+    "name": "leaf02", 
+    "variables": {
+      "ansible_host": "172.20.20.3"
+    }
+  },
+  {
+    "name": "leaf03",
+    "variables": {
+      "ansible_host": "172.20.20.5"
+    }
+  },
+  {
+    "name": "spine01",
+    "variables": {
+      "ansible_host": "172.20.20.6"
+    }
+  },
+  {
+    "name": "spine02",
+    "variables": {
+      "ansible_host": "172.20.20.4"
+    }
+  }
+]

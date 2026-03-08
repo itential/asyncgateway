@@ -1,0 +1,27 @@
+asyncgateway
+Copyright (C) 2025 Itential, Inc.
+
+This product is licensed under the GNU General Public License v3.0 or later.
+See the LICENSE file for the full license text.
+
+-------------------------------------------------------------------------------
+Third-Party Components
+-------------------------------------------------------------------------------
+
+This software incorporates components from the following open source projects:
+
+httpx
+  License: BSD 3-Clause
+  Copyright (c) 2019, Encode OSS Ltd.
+  https://github.com/encode/httpx
+
+h11
+  License: MIT
+  Copyright (c) 2016 Nathaniel J. Smith and other contributors
+  https://github.com/python-hyper/h11
+
+PyYAML (optional dependency)
+  License: MIT
+  Copyright (c) 2017-2021 Ingy döt Net
+  Copyright (c) 2006-2016 Kirill Simonov
+  https://github.com/yaml/pyyaml

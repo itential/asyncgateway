@@ -1,0 +1,22 @@
+# Copyright (c) 2025 Itential, Inc
+# GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
+
+from typing import Any, List, Mapping
+
+from asyncgateway.services import ServiceBase
+
+
+class Service(ServiceBase):
+    """Service class for ansible virtual environment operations in the Itential Gateway."""
+
+    name: str = "ansible_venv"
+
+    async def get_list(self) -> List[Mapping[str, Any]]:
+        """Get list of ansible virtual environments."""
+        res = await self.client.get("/ansible_venv/list")
+        return res.json()
+
+    async def refresh(self) -> Mapping[str, Any]:
+        """Refresh ansible virtual environments."""
+        res = await self.client.get("/ansible_venv/refresh")
+        return res.json()
