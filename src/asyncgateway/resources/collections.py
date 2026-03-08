@@ -1,7 +1,8 @@
 # Copyright (c) 2025 Itential, Inc
 # GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-from typing import Any, Dict, Mapping, Optional
+from collections.abc import Mapping
+from typing import Any
 
 from asyncgateway.resources import ResourceBase
 
@@ -11,21 +12,37 @@ class Resource(ResourceBase):
 
     name: str = "collections"
 
-    async def run_module(self, collection: str, module: str, params: Optional[Dict[str, Any]] = None) -> Mapping[str, Any]:
+    async def run_module(
+        self, collection: str, module: str, params: dict[str, Any] | None = None
+    ) -> Mapping[str, Any]:
         """Run a collection module."""
-        return await self.services.collections.execute_module(collection, module, params or {})
+        return await self.services.collections.execute_module(
+            collection, module, params or {}
+        )
 
-    async def run_role(self, collection: str, role: str, params: Optional[Dict[str, Any]] = None) -> Mapping[str, Any]:
+    async def run_role(
+        self, collection: str, role: str, params: dict[str, Any] | None = None
+    ) -> Mapping[str, Any]:
         """Run a collection role."""
-        return await self.services.collections.execute_role(collection, role, params or {})
+        return await self.services.collections.execute_role(
+            collection, role, params or {}
+        )
 
-    async def ensure_module_schema(self, collection: str, module: str, schema: Mapping[str, Any]) -> Mapping[str, Any]:
+    async def ensure_module_schema(
+        self, collection: str, module: str, schema: Mapping[str, Any]
+    ) -> Mapping[str, Any]:
         """Ensure a collection module schema is set."""
-        return await self.services.collections.update_module_schema(collection, module, schema)
+        return await self.services.collections.update_module_schema(
+            collection, module, schema
+        )
 
-    async def ensure_role_schema(self, collection: str, role: str, schema: Mapping[str, Any]) -> Mapping[str, Any]:
+    async def ensure_role_schema(
+        self, collection: str, role: str, schema: Mapping[str, Any]
+    ) -> Mapping[str, Any]:
         """Ensure a collection role schema is set."""
-        return await self.services.collections.update_role_schema(collection, role, schema)
+        return await self.services.collections.update_role_schema(
+            collection, role, schema
+        )
 
     async def refresh(self) -> Mapping[str, Any]:
         """Refresh collections."""

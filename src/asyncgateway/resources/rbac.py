@@ -1,7 +1,8 @@
 # Copyright (c) 2025 Itential, Inc
 # GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-from typing import Any, Dict, Mapping, Optional
+from collections.abc import Mapping
+from typing import Any
 
 from asyncgateway.resources import ResourceBase
 
@@ -11,7 +12,9 @@ class Resource(ResourceBase):
 
     name: str = "rbac"
 
-    async def ensure_group(self, name: str, params: Optional[Dict[str, Any]] = None) -> Mapping[str, Any]:
+    async def ensure_group(
+        self, name: str, params: dict[str, Any] | None = None
+    ) -> Mapping[str, Any]:
         """Ensure an RBAC group exists. Create if missing."""
         try:
             group = await self.services.rbac.get_group(name)

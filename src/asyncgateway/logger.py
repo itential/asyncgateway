@@ -5,7 +5,6 @@ import logging
 import sys
 from functools import partial
 from pathlib import Path
-from typing import Optional
 
 from . import metadata
 
@@ -118,7 +117,7 @@ def set_level(lvl: int, propagate: bool = False) -> None:
 
 
 def add_file_handler(
-    file_path: str, level: Optional[int] = None, format_string: Optional[str] = None
+    file_path: str, level: int | None = None, format_string: str | None = None
 ) -> None:
     """Add a file handler to the asyncgateway logger.
 
@@ -187,7 +186,7 @@ def configure_file_logging(
     file_path: str,
     level: int = logging.INFO,
     propagate: bool = False,
-    format_string: Optional[str] = None,
+    format_string: str | None = None,
 ) -> None:
     """Configure both console and file logging in one call.
 

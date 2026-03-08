@@ -1,7 +1,8 @@
 # Copyright (c) 2025 Itential, Inc
 # GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-from typing import Any, Dict, List, Mapping
+from collections.abc import Mapping
+from typing import Any
 
 from asyncgateway.services import ServiceBase
 
@@ -16,7 +17,9 @@ class Service(ServiceBase):
         res = await self.client.post("/inventory/refresh")
         return res.json()
 
-    async def get_devices(self, integration_type: str, inventory_name: str, **params) -> List[Mapping[str, Any]]:
+    async def get_devices(
+        self, integration_type: str, inventory_name: str, **params
+    ) -> list[Mapping[str, Any]]:
         """Get all devices from an inventory."""
         res = await self.client.get(
             f"/inventory/{integration_type}/{inventory_name}/devices",
@@ -24,14 +27,18 @@ class Service(ServiceBase):
         )
         return res.json()
 
-    async def get_device(self, integration_type: str, inventory_name: str, device_name: str) -> Mapping[str, Any]:
+    async def get_device(
+        self, integration_type: str, inventory_name: str, device_name: str
+    ) -> Mapping[str, Any]:
         """Get a specific device from an inventory."""
         res = await self.client.get(
             f"/inventory/{integration_type}/{inventory_name}/devices/{device_name}"
         )
         return res.json()
 
-    async def create_device(self, integration_type: str, inventory_name: str, params: Dict[str, Any]) -> Mapping[str, Any]:
+    async def create_device(
+        self, integration_type: str, inventory_name: str, params: dict[str, Any]
+    ) -> Mapping[str, Any]:
         """Create a device in an inventory."""
         res = await self.client.post(
             f"/inventory/{integration_type}/{inventory_name}/devices",
@@ -39,7 +46,13 @@ class Service(ServiceBase):
         )
         return res.json()
 
-    async def update_device(self, integration_type: str, inventory_name: str, device_name: str, params: Dict[str, Any]) -> Mapping[str, Any]:
+    async def update_device(
+        self,
+        integration_type: str,
+        inventory_name: str,
+        device_name: str,
+        params: dict[str, Any],
+    ) -> Mapping[str, Any]:
         """Update a device in an inventory."""
         res = await self.client.put(
             f"/inventory/{integration_type}/{inventory_name}/devices/{device_name}",
@@ -47,7 +60,13 @@ class Service(ServiceBase):
         )
         return res.json()
 
-    async def patch_device(self, integration_type: str, inventory_name: str, device_name: str, params: Dict[str, Any]) -> Mapping[str, Any]:
+    async def patch_device(
+        self,
+        integration_type: str,
+        inventory_name: str,
+        device_name: str,
+        params: dict[str, Any],
+    ) -> Mapping[str, Any]:
         """Patch a device in an inventory."""
         res = await self.client.patch(
             f"/inventory/{integration_type}/{inventory_name}/devices/{device_name}",
@@ -55,13 +74,17 @@ class Service(ServiceBase):
         )
         return res.json()
 
-    async def delete_device(self, integration_type: str, inventory_name: str, device_name: str) -> None:
+    async def delete_device(
+        self, integration_type: str, inventory_name: str, device_name: str
+    ) -> None:
         """Delete a device from an inventory."""
         await self.client.delete(
             f"/inventory/{integration_type}/{inventory_name}/devices/{device_name}"
         )
 
-    async def get_groups(self, integration_type: str, inventory_name: str, **params) -> List[Mapping[str, Any]]:
+    async def get_groups(
+        self, integration_type: str, inventory_name: str, **params
+    ) -> list[Mapping[str, Any]]:
         """Get all groups from an inventory."""
         res = await self.client.get(
             f"/inventory/{integration_type}/{inventory_name}/groups",
@@ -69,21 +92,27 @@ class Service(ServiceBase):
         )
         return res.json()
 
-    async def get_group(self, integration_type: str, inventory_name: str, group_name: str) -> Mapping[str, Any]:
+    async def get_group(
+        self, integration_type: str, inventory_name: str, group_name: str
+    ) -> Mapping[str, Any]:
         """Get a specific group from an inventory."""
         res = await self.client.get(
             f"/inventory/{integration_type}/{inventory_name}/groups/{group_name}"
         )
         return res.json()
 
-    async def get_group_devices(self, integration_type: str, inventory_name: str, group_name: str) -> List[Mapping[str, Any]]:
+    async def get_group_devices(
+        self, integration_type: str, inventory_name: str, group_name: str
+    ) -> list[Mapping[str, Any]]:
         """Get devices in a group from an inventory."""
         res = await self.client.get(
             f"/inventory/{integration_type}/{inventory_name}/groups/{group_name}/devices"
         )
         return res.json()
 
-    async def get_group_children(self, integration_type: str, inventory_name: str, group_name: str) -> List[Mapping[str, Any]]:
+    async def get_group_children(
+        self, integration_type: str, inventory_name: str, group_name: str
+    ) -> list[Mapping[str, Any]]:
         """Get child groups of a group from an inventory."""
         res = await self.client.get(
             f"/inventory/{integration_type}/{inventory_name}/groups/{group_name}/children"

@@ -1,7 +1,7 @@
 # Copyright (c) 2025 Itential, Inc
 # GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-from typing import Any, Dict, Optional, Union
+from typing import Any
 
 import httpx
 
@@ -9,7 +9,7 @@ import httpx
 class AsyncGatewayError(Exception):
     """Base exception for all asyncgateway errors."""
 
-    def __init__(self, message: str, details: Optional[Dict[str, Any]] = None):
+    def __init__(self, message: str, details: dict[str, Any] | None = None):
         super().__init__(message)
         self.message = message
         self.details = details or {}
@@ -26,8 +26,8 @@ class ConnectionError(AsyncGatewayError):
     def __init__(
         self,
         message: str,
-        timeout: Optional[float] = None,
-        details: Optional[Dict[str, Any]] = None,
+        timeout: float | None = None,
+        details: dict[str, Any] | None = None,
     ):
         super().__init__(message, details)
         if timeout:
@@ -46,8 +46,8 @@ class ValidationError(AsyncGatewayError):
     def __init__(
         self,
         message: str,
-        field: Optional[str] = None,
-        details: Optional[Dict[str, Any]] = None,
+        field: str | None = None,
+        details: dict[str, Any] | None = None,
     ):
         super().__init__(message, details)
         if field:
@@ -64,7 +64,7 @@ CacheError = AsyncGatewayError
 
 
 def classify_httpx_error(
-    exc: Exception, request_url: Optional[str] = None
+    exc: Exception, request_url: str | None = None
 ) -> AsyncGatewayError:
     """Convert httpx exceptions to appropriate asyncgateway exceptions."""
     details = {"original_error": str(exc)}
@@ -72,7 +72,7 @@ def classify_httpx_error(
         details["request_url"] = request_url
 
     if isinstance(
-        exc, (httpx.TimeoutException, httpx.ConnectError, httpx.RequestError)
+        exc, httpx.TimeoutException | httpx.ConnectError | httpx.RequestError
     ):
         return ConnectionError(f"Connection failed: {str(exc)}", details=details)
 
@@ -100,9 +100,9 @@ def classify_httpx_error(
 
 def classify_http_status(
     status_code: int,
-    response: Optional[httpx.Response] = None,
-    request_url: Optional[str] = None,
-) -> Union[AsyncGatewayError, AuthenticationError]:
+    response: httpx.Response | None = None,
+    request_url: str | None = None,
+) -> AsyncGatewayError | AuthenticationError:
     """Create appropriate exception for HTTP status codes."""
     details = {}
     if request_url:

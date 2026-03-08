@@ -3,7 +3,6 @@
 
 import json
 import traceback
-from typing import Optional, Union
 
 from . import exceptions, logger
 
@@ -15,7 +14,7 @@ except ImportError:
     YAML_AVAILABLE = False
 
 
-def loads(s: str, format_hint: Optional[str] = None) -> Union[dict, list]:
+def loads(s: str, format_hint: str | None = None) -> dict | list:
     """Automatically detect format and load from string
 
     This function replaces the previous JSON-only loads() function and now supports
@@ -75,7 +74,7 @@ def loads(s: str, format_hint: Optional[str] = None) -> Union[dict, list]:
         ) from None
 
 
-def dumps(o: Union[dict, list], format_type: str = "json", **kwargs) -> str:
+def dumps(o: dict | list, format_type: str = "json", **kwargs) -> str:
     """Serialize object to string in specified format
 
     This function replaces the previous JSON-only dumps() function and now supports
@@ -109,7 +108,7 @@ def dumps(o: Union[dict, list], format_type: str = "json", **kwargs) -> str:
         )
 
 
-def json_loads(s: str) -> Union[dict, list]:
+def json_loads(s: str) -> dict | list:
     """Convert a JSON formatted string to a dict or list object
 
     Args:
@@ -139,7 +138,7 @@ def json_loads(s: str) -> Union[dict, list]:
         ) from exc
 
 
-def json_dumps(o: Union[dict, list]) -> str:
+def json_dumps(o: dict | list) -> str:
     """Convert a dict or list to a JSON string
 
     Args:
@@ -167,7 +166,7 @@ def json_dumps(o: Union[dict, list]) -> str:
         ) from exc
 
 
-def yaml_loads(s: str) -> Union[dict, list]:
+def yaml_loads(s: str) -> dict | list:
     """Convert a YAML formatted string to a dict or list object
 
     Args:
@@ -204,7 +203,7 @@ def yaml_loads(s: str) -> Union[dict, list]:
         ) from exc
 
 
-def yaml_dumps(o: Union[dict, list], **kwargs) -> str:
+def yaml_dumps(o: dict | list, **kwargs) -> str:
     """Convert a dict or list to a YAML string
 
     Args:

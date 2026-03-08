@@ -82,7 +82,9 @@ class ServiceBase:
         offset = 0
         results = []
         while True:
-            res = await self.client.get(path, params={**params, "limit": limit, "offset": offset})
+            res = await self.client.get(
+                path, params={**params, "limit": limit, "offset": offset}
+            )
             body = res.json()
             results.extend(body.get("data", []))
             meta = body.get("meta", {})

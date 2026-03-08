@@ -1,7 +1,8 @@
 # Copyright (c) 2025 Itential, Inc
 # GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-from typing import Any, List, Mapping
+from collections.abc import Mapping
+from typing import Any
 
 from asyncgateway.services import ServiceBase
 
@@ -11,7 +12,7 @@ class Service(ServiceBase):
 
     name: str = "ansible_venv"
 
-    async def get_list(self) -> List[Mapping[str, Any]]:
+    async def get_list(self) -> list[Mapping[str, Any]]:
         """Get list of ansible virtual environments."""
         res = await self.client.get("/ansible_venv/list")
         return res.json()

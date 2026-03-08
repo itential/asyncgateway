@@ -1,7 +1,8 @@
 # Copyright (c) 2025 Itential, Inc
 # GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-from typing import Any, Dict, List, Mapping
+from collections.abc import Mapping
+from typing import Any
 
 from asyncgateway.services import ServiceBase
 
@@ -11,17 +12,17 @@ class Service(ServiceBase):
 
     name: str = "gnmi"
 
-    async def get(self, params: Dict[str, Any]) -> Mapping[str, Any]:
+    async def get(self, params: dict[str, Any]) -> Mapping[str, Any]:
         """Execute a gNMI get operation."""
         res = await self.client.post("/gnmi/get/execute", json=params)
         return res.json()
 
-    async def set(self, params: Dict[str, Any]) -> Mapping[str, Any]:
+    async def set(self, params: dict[str, Any]) -> Mapping[str, Any]:
         """Execute a gNMI set operation."""
         res = await self.client.post("/gnmi/set/execute", json=params)
         return res.json()
 
-    async def get_history(self, command: str, **params) -> List[Mapping[str, Any]]:
+    async def get_history(self, command: str, **params) -> list[Mapping[str, Any]]:
         """Get execution history for a gNMI command."""
         res = await self.client.get(f"/gnmi/{command}/history", params=params)
         return res.json()

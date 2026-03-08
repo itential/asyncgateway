@@ -1,7 +1,8 @@
 # Copyright (c) 2025 Itential, Inc
 # GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-from typing import Any, Dict, List, Mapping, Optional
+from collections.abc import Mapping
+from typing import Any
 
 from asyncgateway.exceptions import AsyncGatewayError
 from asyncgateway.resources import Operation, ResourceBase
@@ -12,15 +13,21 @@ class Resource(ResourceBase):
 
     name: str = "playbooks"
 
-    async def run(self, name: str, params: Optional[Dict[str, Any]] = None) -> Mapping[str, Any]:
+    async def run(
+        self, name: str, params: dict[str, Any] | None = None
+    ) -> Mapping[str, Any]:
         """Run a playbook."""
         return await self.services.playbooks.execute(name, params or {})
 
-    async def dry_run(self, name: str, params: Optional[Dict[str, Any]] = None) -> Mapping[str, Any]:
+    async def dry_run(
+        self, name: str, params: dict[str, Any] | None = None
+    ) -> Mapping[str, Any]:
         """Dry run a playbook."""
         return await self.services.playbooks.dry_run(name, params or {})
 
-    async def ensure_schema(self, name: str, schema: Mapping[str, Any]) -> Mapping[str, Any]:
+    async def ensure_schema(
+        self, name: str, schema: Mapping[str, Any]
+    ) -> Mapping[str, Any]:
         """Ensure a playbook schema is set."""
         return await self.services.playbooks.update_schema(name, schema)
 
@@ -28,7 +35,7 @@ class Resource(ResourceBase):
         """Remove a playbook schema."""
         return await self.services.playbooks.delete_schema(name)
 
-    async def load(self, data: List[Mapping[str, Any]], op: str) -> Dict[str, Any]:
+    async def load(self, data: list[Mapping[str, Any]], op: str) -> dict[str, Any]:
         """Load all playbooks from data based on the operation.
 
         Args:
@@ -50,7 +57,7 @@ class Resource(ResourceBase):
                 f"Invalid operation '{op}'. Must be one of: {valid_operations}"
             )
 
-        results: Dict[str, Any] = {
+        results: dict[str, Any] = {
             "operation": op,
             "playbooks_processed": 0,
             "playbooks_created": 0,
@@ -98,11 +105,15 @@ class Resource(ResourceBase):
                         elif op == Operation.OVERWRITE:
                             # Replace existing playbook
                             await self.services.playbooks.delete(playbook_name)
-                            await self.services.playbooks.create(playbook_name, playbook_config)
+                            await self.services.playbooks.create(
+                                playbook_name, playbook_config
+                            )
                             results["playbooks_updated"] += 1
                     else:
                         # Create new playbook
-                        await self.services.playbooks.create(playbook_name, playbook_config)
+                        await self.services.playbooks.create(
+                            playbook_name, playbook_config
+                        )
                         results["playbooks_created"] += 1
 
                 except Exception as e:

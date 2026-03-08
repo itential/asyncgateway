@@ -54,7 +54,7 @@ uv run bandit -r src/asyncgateway --configfile pyproject.toml  # security
 make premerge                    # lint + security + tests (full local CI)
 ```
 
-CI runs on GitHub Actions (`.github/workflows/premerge.yaml`) on push/PR to `main`/`devel`: lint → typecheck → security in parallel, then test matrix (py310–py313 via tox), plus a coverage job. Releases are published to PyPI via OIDC trusted publishing on `v*` tags.
+CI runs on GitHub Actions (`.github/workflows/ci.yaml`) on push/PR to `main`/`devel`: lint → typecheck → security in parallel, then test matrix (py310–py313 via tox), plus a coverage job. Releases are published to PyPI via OIDC trusted publishing on `v*` tags.
 
 **First-run verification:** `uv run pytest` passes without a live IAG instance — all tests mock `ipsdk`.
 

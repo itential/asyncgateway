@@ -50,15 +50,13 @@ class TestLoad:
     def mock_client_with_services(self):
         """Create a mock client with device and playbook services."""
         with (
-            patch("asyncgateway.client.ipsdk.gateway_factory"),
+            patch("ipsdk.gateway_factory"),
             patch(
-                "asyncgateway.client.os.listdir",
+                "os.listdir",
                 side_effect=[["devices.py", "playbooks.py"], []],
             ),
-            patch("asyncgateway.client.importlib.util.spec_from_file_location"),
-            patch(
-                "asyncgateway.client.importlib.util.module_from_spec"
-            ) as mock_module_from_spec,
+            patch("importlib.util.spec_from_file_location"),
+            patch("importlib.util.module_from_spec") as mock_module_from_spec,
         ):
             # Mock devices service
             devices_service = Mock()

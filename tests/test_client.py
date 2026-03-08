@@ -9,10 +9,10 @@ from asyncgateway.client import Client
 
 
 class TestClient:
-    @patch("asyncgateway.client.ipsdk.gateway_factory")
-    @patch("asyncgateway.client.os.listdir")
-    @patch("asyncgateway.client.importlib.util.spec_from_file_location")
-    @patch("asyncgateway.client.importlib.util.module_from_spec")
+    @patch("ipsdk.gateway_factory")
+    @patch("os.listdir")
+    @patch("importlib.util.spec_from_file_location")
+    @patch("importlib.util.module_from_spec")
     def test_init_services_basic(
         self,
         mock_module_from_spec,
@@ -66,8 +66,8 @@ class TestClient:
         assert client.services.devices == mock_service_instance
         mock_service_class.assert_called_with(mock_client)
 
-    @patch("asyncgateway.client.ipsdk.gateway_factory")
-    @patch("asyncgateway.client.os.listdir")
+    @patch("ipsdk.gateway_factory")
+    @patch("os.listdir")
     def test_init_services_empty_directory(self, mock_listdir, mock_gateway_factory):
         mock_listdir.side_effect = [[], []]
         mock_gateway_factory.return_value = Mock()
@@ -77,8 +77,8 @@ class TestClient:
         # Should not fail with empty directory
         assert isinstance(client, Client)
 
-    @patch("asyncgateway.client.ipsdk.gateway_factory")
-    @patch("asyncgateway.client.os.listdir")
+    @patch("ipsdk.gateway_factory")
+    @patch("os.listdir")
     def test_init_services_no_py_files(self, mock_listdir, mock_gateway_factory):
         mock_listdir.side_effect = [["README.md", "data.json", "script.sh"], []]
         mock_gateway_factory.return_value = Mock()
@@ -88,10 +88,10 @@ class TestClient:
         # Should not fail with no .py files
         assert isinstance(client, Client)
 
-    @patch("asyncgateway.client.ipsdk.gateway_factory")
-    @patch("asyncgateway.client.os.listdir")
-    @patch("asyncgateway.client.importlib.util.spec_from_file_location")
-    @patch("asyncgateway.client.importlib.util.module_from_spec")
+    @patch("ipsdk.gateway_factory")
+    @patch("os.listdir")
+    @patch("importlib.util.spec_from_file_location")
+    @patch("importlib.util.module_from_spec")
     def test_init_services_service_with_no_service_class(
         self,
         mock_module_from_spec,
@@ -114,10 +114,10 @@ class TestClient:
         # Should handle missing Service class gracefully
         assert isinstance(client, Client)
 
-    @patch("asyncgateway.client.ipsdk.gateway_factory")
-    @patch("asyncgateway.client.os.listdir")
-    @patch("asyncgateway.client.importlib.util.spec_from_file_location")
-    @patch("asyncgateway.client.importlib.util.module_from_spec")
+    @patch("ipsdk.gateway_factory")
+    @patch("os.listdir")
+    @patch("importlib.util.spec_from_file_location")
+    @patch("importlib.util.module_from_spec")
     def test_init_services_multiple_services(
         self,
         mock_module_from_spec,
@@ -162,11 +162,11 @@ class TestClient:
     def test_services_directory_path(self):
         # Test that the services path is constructed correctly using os.path functions
         with (
-            patch("asyncgateway.client.os.path.dirname") as mock_dirname,
-            patch("asyncgateway.client.os.path.realpath") as mock_realpath,
-            patch("asyncgateway.client.os.path.join") as mock_join,
-            patch("asyncgateway.client.ipsdk.gateway_factory"),
-            patch("asyncgateway.client.os.listdir", side_effect=[[], []]),
+            patch("os.path.dirname") as mock_dirname,
+            patch("os.path.realpath") as mock_realpath,
+            patch("os.path.join") as mock_join,
+            patch("ipsdk.gateway_factory"),
+            patch("os.listdir", side_effect=[[], []]),
         ):
             mock_realpath.return_value = "/path/to/asyncgateway/client.py"
             mock_dirname.return_value = "/path/to/asyncgateway"
@@ -184,8 +184,8 @@ class TestClient:
     @pytest.mark.asyncio
     async def test_aenter(self):
         with (
-            patch("asyncgateway.client.ipsdk.gateway_factory"),
-            patch("asyncgateway.client.os.listdir", side_effect=[[], []]),
+            patch("ipsdk.gateway_factory"),
+            patch("os.listdir", side_effect=[[], []]),
         ):
             client = Client()
             result = await client.__aenter__()
@@ -195,8 +195,8 @@ class TestClient:
     @pytest.mark.asyncio
     async def test_aexit(self):
         with (
-            patch("asyncgateway.client.ipsdk.gateway_factory"),
-            patch("asyncgateway.client.os.listdir", side_effect=[[], []]),
+            patch("ipsdk.gateway_factory"),
+            patch("os.listdir", side_effect=[[], []]),
         ):
             client = Client()
             # Should not raise any exceptions
@@ -205,8 +205,8 @@ class TestClient:
     @pytest.mark.asyncio
     async def test_aexit_with_exception(self):
         with (
-            patch("asyncgateway.client.ipsdk.gateway_factory"),
-            patch("asyncgateway.client.os.listdir", side_effect=[[], []]),
+            patch("ipsdk.gateway_factory"),
+            patch("os.listdir", side_effect=[[], []]),
         ):
             client = Client()
             # Should handle exceptions gracefully
@@ -215,16 +215,16 @@ class TestClient:
     @pytest.mark.asyncio
     async def test_async_context_manager_usage(self):
         with (
-            patch("asyncgateway.client.ipsdk.gateway_factory"),
-            patch("asyncgateway.client.os.listdir", side_effect=[[], []]),
+            patch("ipsdk.gateway_factory"),
+            patch("os.listdir", side_effect=[[], []]),
         ):
             async with Client() as client:
                 assert isinstance(client, Client)
 
-    @patch("asyncgateway.client.ipsdk.gateway_factory")
-    @patch("asyncgateway.client.os.listdir")
-    @patch("asyncgateway.client.importlib.util.spec_from_file_location")
-    @patch("asyncgateway.client.importlib.util.module_from_spec")
+    @patch("ipsdk.gateway_factory")
+    @patch("os.listdir")
+    @patch("importlib.util.spec_from_file_location")
+    @patch("importlib.util.module_from_spec")
     def test_init_passes_kwargs_to_gateway_factory(
         self,
         mock_module_from_spec,
@@ -247,10 +247,10 @@ class TestClient:
 
         mock_gateway_factory.assert_called_once_with(want_async=True, **kwargs)
 
-    @patch("asyncgateway.client.ipsdk.gateway_factory")
-    @patch("asyncgateway.client.os.listdir")
-    @patch("asyncgateway.client.importlib.util.spec_from_file_location")
-    @patch("asyncgateway.client.importlib.util.module_from_spec")
+    @patch("ipsdk.gateway_factory")
+    @patch("os.listdir")
+    @patch("importlib.util.spec_from_file_location")
+    @patch("importlib.util.module_from_spec")
     def test_service_loader_exception_handling(
         self,
         mock_module_from_spec,
@@ -268,10 +268,10 @@ class TestClient:
         with pytest.raises(Exception, match="Module loading failed"):
             Client()
 
-    @patch("asyncgateway.client.ipsdk.gateway_factory")
-    @patch("asyncgateway.client.os.listdir")
-    @patch("asyncgateway.client.importlib.util.spec_from_file_location")
-    @patch("asyncgateway.client.importlib.util.module_from_spec")
+    @patch("ipsdk.gateway_factory")
+    @patch("os.listdir")
+    @patch("importlib.util.spec_from_file_location")
+    @patch("importlib.util.module_from_spec")
     def test_service_with_invalid_name_attribute(
         self,
         mock_module_from_spec,

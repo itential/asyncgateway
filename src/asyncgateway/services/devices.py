@@ -7,7 +7,8 @@ This module provides asynchronous methods for managing devices in the Itential G
 including operations for creating, reading, updating, and deleting device configurations.
 """
 
-from typing import Any, Dict, List, Mapping, Optional
+from collections.abc import Mapping
+from typing import Any
 
 from asyncgateway.services import ServiceBase
 
@@ -45,12 +46,12 @@ class Service(ServiceBase):
         res = await self.client.get(f"/devices/{name}")
         return res.json()
 
-    async def get_all(self) -> List[Mapping[str, Any]]:
+    async def get_all(self) -> list[Mapping[str, Any]]:
         """Retrieve all devices from the Gateway API."""
         return await self._get_all("/devices")
 
     async def create(
-        self, name: str, variables: Optional[Mapping[str, Any]] = None
+        self, name: str, variables: Mapping[str, Any] | None = None
     ) -> None:
         """Create a new device in the Gateway."""
         body = {"name": name, "variables": variables or {}}

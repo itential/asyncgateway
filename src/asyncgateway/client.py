@@ -5,7 +5,7 @@ import importlib
 import importlib.util
 import os
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 import ipsdk
 
@@ -54,7 +54,7 @@ class Client:
                 instance = res(self.services)
                 setattr(self.resources, instance.name, instance)
 
-    def _discover_modules(self, path: str) -> List[str]:
+    def _discover_modules(self, path: str) -> list[str]:
         return [
             f[:-3]
             for f in os.listdir(path)
@@ -63,11 +63,13 @@ class Client:
 
     def _load_module(self, name: str, filepath: str):
         spec = importlib.util.spec_from_file_location(name, filepath)
+        if spec is None or spec.loader is None:
+            raise ImportError(f"Cannot load module '{name}' from '{filepath}'")
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
         return module
 
-    def _get_available_services(self) -> List[str]:
+    def _get_available_services(self) -> list[str]:
         services = []
         for attr_name in dir(self.services):
             if attr_name.startswith("_"):
@@ -77,7 +79,7 @@ class Client:
                 services.append(attr.name)
         return services
 
-    async def load(self, path: str, op: str = Operation.MERGE) -> Dict[str, Any]:
+    async def load(self, path: str, op: str = Operation.MERGE) -> dict[str, Any]:
         valid_operations = {Operation.MERGE, Operation.REPLACE, Operation.OVERWRITE}
         if op not in valid_operations:
             raise ValidationError(
@@ -90,7 +92,7 @@ class Client:
         if not load_path.is_dir():
             raise ValidationError(f"Load path must be a directory: {path}")
 
-        results: Dict[str, Any] = {
+        results: dict[str, Any] = {
             "operation": op,
             "services_processed": 0,
             "total_resources_processed": 0,
@@ -108,7 +110,9 @@ class Client:
                 if not service_dir.exists() or not service_dir.is_dir():
                     continue
                 try:
-                    service_data = await self._load_service_data(service_dir, service_name)
+                    service_data = await self._load_service_data(
+                        service_dir, service_name
+                    )
                     if not service_data:
                         continue
                     service = getattr(self.services, service_name)
@@ -118,17 +122,28 @@ class Client:
                         results["service_results"][service_name] = service_results
                         if isinstance(service_results, dict):
                             for key, value in service_results.items():
-                                if key.endswith("_processed") and isinstance(value, int):
+                                if key.endswith("_processed") and isinstance(
+                                    value, int
+                                ):
                                     results["total_resources_processed"] += value
-                                elif key.endswith("_created") and isinstance(value, int):
+                                elif key.endswith("_created") and isinstance(
+                                    value, int
+                                ):
                                     results["total_resources_created"] += value
-                                elif key.endswith("_updated") and isinstance(value, int):
+                                elif key.endswith("_updated") and isinstance(
+                                    value, int
+                                ):
                                     results["total_resources_updated"] += value
-                                elif key.endswith("_deleted") and isinstance(value, int):
+                                elif key.endswith("_deleted") and isinstance(
+                                    value, int
+                                ):
                                     results["total_resources_deleted"] += value
                             if service_results.get("errors"):
                                 results["errors"].extend(
-                                    [f"{service_name}: {e}" for e in service_results["errors"]]
+                                    [
+                                        f"{service_name}: {e}"
+                                        for e in service_results["errors"]
+                                    ]
                                 )
                     else:
                         results["errors"].append(
@@ -142,14 +157,19 @@ class Client:
         except Exception as e:
             raise AsyncGatewayError(f"Load from path failed: {str(e)}") from e
 
-    async def _load_service_data(self, service_dir: Path, service_name: str) -> List[Dict[str, Any]]:
+    async def _load_service_data(
+        self, service_dir: Path, service_name: str
+    ) -> list[dict[str, Any]]:
         all_data = []
         supported_extensions = {".json"}
         if serdes.YAML_AVAILABLE:
             supported_extensions.update({".yaml", ".yml"})
         try:
             for file_path in service_dir.rglob("*"):
-                if file_path.is_file() and file_path.suffix.lower() in supported_extensions:
+                if (
+                    file_path.is_file()
+                    and file_path.suffix.lower() in supported_extensions
+                ):
                     try:
                         content = file_path.read_text(encoding="utf-8").strip()
                         if not content:
@@ -169,7 +189,9 @@ class Client:
                                 f"Invalid data format in {file_path}: expected dict or list"
                             )
                     except Exception as e:
-                        raise AsyncGatewayError(f"Failed to load {file_path}: {str(e)}") from e
+                        raise AsyncGatewayError(
+                            f"Failed to load {file_path}: {str(e)}"
+                        ) from e
         except Exception as e:
             raise AsyncGatewayError(f"Failed to scan {service_dir}: {str(e)}") from e
         return all_data
