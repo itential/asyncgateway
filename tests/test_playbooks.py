@@ -619,3 +619,113 @@ class TestPlaybooksService:
             assert result["playbooks_created"] == 1  # Only playbook1 succeeded
             assert len(result["errors"]) == 1
             assert "Failed to process playbook2: Creation failed" in result["errors"][0]
+
+    # ------------------------------------------------------------------
+    # Missing PlaybooksService method tests
+    # ------------------------------------------------------------------
+
+    @pytest.mark.asyncio
+    async def test_execute_playbook(self, playbooks_service, mock_client):
+        """Test executing a playbook."""
+        params = {"hostname": "router1", "config_template": "base_config"}
+        execution_result = {
+            "job_id": "job-abc123",
+            "status": "running",
+            "playbook": "network_config",
+        }
+
+        mock_response = Mock()
+        mock_response.json.return_value = execution_result
+        mock_client.post = AsyncMock(return_value=mock_response)
+
+        result = await playbooks_service.execute("network_config", params)
+
+        mock_client.post.assert_called_once_with(
+            "/playbooks/network_config/execute", json=params
+        )
+        assert result == execution_result
+
+    @pytest.mark.asyncio
+    async def test_execute_playbook_empty_params(self, playbooks_service, mock_client):
+        """Test executing a playbook with empty params."""
+        mock_response = Mock()
+        mock_response.json.return_value = {"job_id": "job-xyz"}
+        mock_client.post = AsyncMock(return_value=mock_response)
+
+        result = await playbooks_service.execute("simple_playbook", {})
+
+        mock_client.post.assert_called_once_with(
+            "/playbooks/simple_playbook/execute", json={}
+        )
+        assert result == {"job_id": "job-xyz"}
+
+    @pytest.mark.asyncio
+    async def test_dry_run_playbook(self, playbooks_service, mock_client):
+        """Test dry running a playbook."""
+        params = {"hostname": "router1"}
+        dry_run_result = {
+            "would_change": True,
+            "diff": "--- old\n+++ new\n",
+            "playbook": "network_config",
+        }
+
+        mock_response = Mock()
+        mock_response.json.return_value = dry_run_result
+        mock_client.post = AsyncMock(return_value=mock_response)
+
+        result = await playbooks_service.dry_run("network_config", params)
+
+        mock_client.post.assert_called_once_with(
+            "/playbooks/network_config/dry_run", json=params
+        )
+        assert result == dry_run_result
+
+    @pytest.mark.asyncio
+    async def test_dry_run_no_changes(self, playbooks_service, mock_client):
+        """Test dry run that shows no changes."""
+        mock_response = Mock()
+        mock_response.json.return_value = {"would_change": False, "diff": ""}
+        mock_client.post = AsyncMock(return_value=mock_response)
+
+        result = await playbooks_service.dry_run("idempotent_playbook", {})
+
+        mock_client.post.assert_called_once_with(
+            "/playbooks/idempotent_playbook/dry_run", json={}
+        )
+        assert result["would_change"] is False
+
+    @pytest.mark.asyncio
+    async def test_get_history(self, playbooks_service, mock_client):
+        """Test getting execution history for a playbook."""
+        history = [
+            {"job_id": "job-001", "status": "completed", "started_at": "2025-01-01"},
+            {"job_id": "job-002", "status": "failed", "started_at": "2025-01-02"},
+        ]
+
+        mock_response = Mock()
+        mock_response.json.return_value = history
+        mock_client.get = AsyncMock(return_value=mock_response)
+
+        result = await playbooks_service.get_history("network_config")
+
+        mock_client.get.assert_called_once_with(
+            "/playbooks/network_config/history", params={}
+        )
+        assert result == history
+        assert len(result) == 2
+
+    @pytest.mark.asyncio
+    async def test_get_history_with_params(self, playbooks_service, mock_client):
+        """Test getting playbook history with filter params."""
+        mock_response = Mock()
+        mock_response.json.return_value = []
+        mock_client.get = AsyncMock(return_value=mock_response)
+
+        await playbooks_service.get_history(
+            "network_config", limit=10, status="completed"
+        )
+
+        mock_client.get.assert_called_once_with(
+            "/playbooks/network_config/history",
+            params={"limit": 10, "status": "completed"},
+        )
