@@ -1,0 +1,24 @@
+# Copyright (c) 2025 Itential, Inc
+# GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
+
+from typing import Any, Dict, Mapping
+
+from asyncgateway.resources import ResourceBase
+
+
+class Resource(ResourceBase):
+    """Resource class for netconf operations."""
+
+    name: str = "netconf"
+
+    async def get_config(self, params: Dict[str, Any]) -> Mapping[str, Any]:
+        """Get configuration via netconf."""
+        return await self.services.netconf.get_config(params)
+
+    async def set_config(self, params: Dict[str, Any]) -> Mapping[str, Any]:
+        """Set configuration via netconf."""
+        return await self.services.netconf.set_config(params)
+
+    async def exec_rpc(self, params: Dict[str, Any]) -> Mapping[str, Any]:
+        """Execute an RPC via netconf."""
+        return await self.services.netconf.exec_rpc(params)

@@ -1,0 +1,28 @@
+# Copyright (c) 2025 Itential, Inc
+# GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
+
+from typing import Any, Dict, Mapping, Optional
+
+from asyncgateway.resources import ResourceBase
+
+
+class Resource(ResourceBase):
+    """Resource class for managing scripts declaratively."""
+
+    name: str = "scripts"
+
+    async def run(self, name: str, params: Optional[Dict[str, Any]] = None) -> Mapping[str, Any]:
+        """Run a script."""
+        return await self.services.scripts.execute(name, params or {})
+
+    async def ensure_schema(self, name: str, schema: Mapping[str, Any]) -> Mapping[str, Any]:
+        """Ensure a script schema is set."""
+        return await self.services.scripts.update_schema(name, schema)
+
+    async def remove_schema(self, name: str) -> Mapping[str, Any]:
+        """Remove a script schema."""
+        return await self.services.scripts.delete_schema(name)
+
+    async def refresh(self) -> Mapping[str, Any]:
+        """Refresh scripts."""
+        return await self.services.scripts.refresh()

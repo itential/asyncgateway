@@ -1,0 +1,73 @@
+# Pre-commit hooks configuration
+# See https://pre-commit.com for more information
+# Install pre-commit hooks: pre-commit install
+
+repos:
+  # Ruff linting and formatting
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.7.4
+    hooks:
+      # Run the linter
+      - id: ruff
+        args: [--fix]
+        types_or: [python, pyi]
+      # Run the formatter
+      - id: ruff-format
+        types_or: [python, pyi]
+
+  # Built-in pre-commit hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: '^tests/.*\.py$'  # Allow trailing whitespace in test files for specific test cases
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+      - id: check-case-conflict
+      - id: check-merge-conflict
+      - id: check-toml
+      - id: debug-statements
+
+  # Local hooks for custom checks and tools
+  - repo: local
+    hooks:
+      # Security scanning with bandit
+      - id: bandit-security
+        name: bandit security scan
+        entry: uv run bandit
+        args: ["--configfile", "pyproject.toml"]
+        language: system
+        files: ^src/asyncgateway/.*\.py$
+        pass_filenames: true
+      # Run tests to ensure they pass
+      - id: pytest
+        name: pytest
+        entry: uv run pytest
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]  # Only run on pre-push to avoid slowing down commits
+
+      # Custom hook to run make premerge validation
+      - id: make-premerge
+        name: make premerge validation
+        entry: make
+        args: [premerge]
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [manual, pre-commit]  # Run manually with: pre-commit run make-premerge
+
+# Configuration for pre-commit.ci (if using)
+ci:
+  autofix_commit_msg: |
+    [pre-commit.ci] auto fixes from pre-commit hooks
+
+    for more information, see https://pre-commit.ci
+  autofix_prs: true
+  autoupdate_branch: ''
+  autoupdate_commit_msg: '[pre-commit.ci] pre-commit autoupdate'
+  autoupdate_schedule: weekly
+  skip: []
+  submodules: false
