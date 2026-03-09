@@ -179,10 +179,8 @@ class TestDevicesService:
         mock_client.delete.assert_called_once_with("/devices/router1")
 
     @pytest.mark.asyncio
-    async def test_delete_all_devices_with_router_prefix(
-        self, devices_service, mock_client
-    ):
-        """Test deleting all devices with router prefix."""
+    async def test_delete_all_devices(self, devices_service, mock_client):
+        """Test deleting all devices regardless of name."""
         devices_data = [
             {"name": "router1", "variables": {}},
             {"name": "router2", "variables": {}},
@@ -191,7 +189,6 @@ class TestDevicesService:
             {"name": "firewall1", "variables": {}},
         ]
 
-        # Mock get_all to return test data
         with patch.object(
             devices_service, "get_all", return_value=devices_data
         ) as mock_get_all:
@@ -201,21 +198,23 @@ class TestDevicesService:
 
             mock_get_all.assert_called_once()
 
-            # Should only delete devices starting with "router"
+            # Should delete all devices
             expected_calls = [
                 ("/devices/router1",),
                 ("/devices/router2",),
+                ("/devices/switch1",),
                 ("/devices/router_backup",),
+                ("/devices/firewall1",),
             ]
             actual_calls = [call.args for call in mock_client.delete.call_args_list]
             assert actual_calls == expected_calls
-            assert mock_client.delete.call_count == 3
+            assert mock_client.delete.call_count == 5
 
     @pytest.mark.asyncio
-    async def test_delete_all_devices_no_router_devices(
+    async def test_delete_all_devices_non_router_names(
         self, devices_service, mock_client
     ):
-        """Test delete_all when no devices start with router."""
+        """Test delete_all deletes all devices regardless of name prefix."""
         devices_data = [
             {"name": "switch1", "variables": {}},
             {"name": "firewall1", "variables": {}},
@@ -230,7 +229,7 @@ class TestDevicesService:
             await devices_service.delete_all()
 
             mock_get_all.assert_called_once()
-            mock_client.delete.assert_not_called()
+            assert mock_client.delete.call_count == 3
 
     @pytest.mark.asyncio
     async def test_delete_all_devices_empty_list(self, devices_service, mock_client):

@@ -63,11 +63,10 @@ class Service(ServiceBase):
         await self.client.delete(f"/devices/{name}")
 
     async def delete_all(self) -> None:
-        """Delete all devices that have names starting with 'router'."""
+        """Delete all devices."""
         devices = await self.get_all()
-        for ele in devices:
-            if ele["name"].startswith("router"):
-                await self.delete(ele["name"])
+        for device in devices:
+            await self.delete(device["name"])
 
     async def patch(self, name: str, variables: Mapping[str, Any]) -> Mapping[str, Any]:
         """Patch variables for a specific device."""

@@ -45,11 +45,12 @@ class Service(ServiceBase):
 
             json_data = res.json()
 
+            page = json_data["data"]
             total = json_data["meta"]["count"]
 
-            results.extend(json_data["data"])
+            results.extend(page)
 
-            if len(results) == total:
+            if not page or len(results) >= total:
                 break
 
             offset += limit
