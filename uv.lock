@@ -24,6 +24,11 @@ dependencies = [
     { name = "ipsdk" },
 ]
 
+[package.optional-dependencies]
+yaml = [
+    { name = "pyyaml" },
+]
+
 [package.dev-dependencies]
 dev = [
     { name = "bandit" },
@@ -41,7 +46,11 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "ipsdk" }]
+requires-dist = [
+    { name = "ipsdk", specifier = ">=0.3.0" },
+    { name = "pyyaml", marker = "extra == 'yaml'", specifier = ">=6.0" },
+]
+provides-extras = ["yaml"]
 
 [package.metadata.requires-dev]
 dev = [

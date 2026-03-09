@@ -7,7 +7,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 
 dependencies = [
-    "ipsdk",
+    "ipsdk>=0.3.0",
 ]
 
 dynamic = [
@@ -44,6 +44,8 @@ Homepage = "https://itential.com"
 Repository = "https://github.com/itential/asyncgateway"
 Documentation = "https://github.com/itential/asyncgateway"
 
+[project.optional-dependencies]
+yaml = ["PyYAML>=6.0"]
 
 [dependency-groups]
 dev = [

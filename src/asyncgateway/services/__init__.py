@@ -8,6 +8,8 @@ This module provides the base class for all asyncgateway services and defines
 the common interface that services must implement.
 """
 
+from typing import Any
+
 
 class Operation:
     """Enumeration of supported import operations for device management.
@@ -54,7 +56,7 @@ class ServiceBase:
 
     """
 
-    def __init__(self, client):
+    def __init__(self, client: Any) -> None:
         """Initialize the service with an ipsdk client.
 
         Args:

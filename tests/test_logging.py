@@ -200,26 +200,26 @@ class TestExceptionFunction:
 
 
 class TestFatalFunction:
-    @patch("sys.exit")
     @patch("builtins.print")
     @patch("asyncgateway.logging.log")
-    def test_fatal_logs_at_fatal_level(self, mock_log, mock_print, mock_exit):
-        ag_logging.fatal("fatal message")
+    def test_fatal_logs_at_fatal_level(self, mock_log, mock_print):
+        with pytest.raises(SystemExit):
+            ag_logging.fatal("fatal message")
         mock_log.assert_called_with(logging.FATAL, "fatal message")
 
-    @patch("sys.exit")
     @patch("builtins.print")
     @patch("asyncgateway.logging.log")
-    def test_fatal_prints_to_stderr(self, mock_log, mock_print, mock_exit):
-        ag_logging.fatal("fatal message")
+    def test_fatal_prints_to_stderr(self, mock_log, mock_print):
+        with pytest.raises(SystemExit):
+            ag_logging.fatal("fatal message")
         mock_print.assert_called_with("ERROR: fatal message", file=sys.stderr)
 
-    @patch("sys.exit")
     @patch("builtins.print")
     @patch("asyncgateway.logging.log")
-    def test_fatal_exits_with_code_1(self, mock_log, mock_print, mock_exit):
-        ag_logging.fatal("fatal message")
-        mock_exit.assert_called_with(1)
+    def test_fatal_exits_with_code_1(self, mock_log, mock_print):
+        with pytest.raises(SystemExit) as exc_info:
+            ag_logging.fatal("fatal message")
+        assert exc_info.value.code == 1
 
 
 class TestGetLogger:

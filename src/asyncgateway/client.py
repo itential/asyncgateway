@@ -15,6 +15,7 @@ import importlib
 import importlib.util
 import os
 from pathlib import Path
+from types import TracebackType
 from typing import Any
 
 import ipsdk
@@ -33,16 +34,21 @@ class _Namespace:
 
 
 class Client:
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any) -> None:
         self.services = _Namespace()
         self.resources = _Namespace()
         self._init_services(**kwargs)
         self._init_resources()
 
-    async def __aenter__(self):
+    async def __aenter__(self) -> "Client":
         return self
 
-    async def __aexit__(self, exc_type, exc_value, traceback):
+    async def __aexit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        traceback: TracebackType | None,
+    ) -> None:
         pass
 
     def _init_services(self, **kwargs):
