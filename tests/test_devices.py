@@ -256,6 +256,67 @@ class TestDevicesService:
         assert service.name == "devices"
 
     @pytest.mark.asyncio
+    async def test_patch_device(self, devices_service, mock_client):
+        """Test patching device variables."""
+        patch_data = {"ansible_host": "10.0.0.99", "device_type": "cisco_nxos"}
+        patched = {"name": "router1", "variables": patch_data}
+
+        mock_response = Mock()
+        mock_response.json.return_value = patched
+        mock_client.patch = AsyncMock(return_value=mock_response)
+
+        result = await devices_service.patch("router1", patch_data)
+
+        mock_client.patch.assert_called_once_with(
+            "/devices/router1", json={"variables": patch_data}
+        )
+        assert result == patched
+
+    @pytest.mark.asyncio
+    async def test_get_variables(self, devices_service, mock_client):
+        """Test getting all variables for a device."""
+        variables = {"ansible_host": "192.168.1.1", "device_type": "cisco_ios"}
+
+        mock_response = Mock()
+        mock_response.json.return_value = variables
+        mock_client.get = AsyncMock(return_value=mock_response)
+
+        result = await devices_service.get_variables("router1")
+
+        mock_client.get.assert_called_once_with("/devices/router1/variables")
+        assert result == variables
+
+    @pytest.mark.asyncio
+    async def test_get_variable(self, devices_service, mock_client):
+        """Test getting a specific variable for a device."""
+        variable = {"ansible_host": "192.168.1.1"}
+
+        mock_response = Mock()
+        mock_response.json.return_value = variable
+        mock_client.get = AsyncMock(return_value=mock_response)
+
+        result = await devices_service.get_variable("router1", "ansible_host")
+
+        mock_client.get.assert_called_once_with(
+            "/devices/router1/variables/ansible_host"
+        )
+        assert result == variable
+
+    @pytest.mark.asyncio
+    async def test_get_state(self, devices_service, mock_client):
+        """Test getting the state of a device."""
+        state = {"status": "reachable", "last_seen": "2025-01-01T00:00:00Z"}
+
+        mock_response = Mock()
+        mock_response.json.return_value = state
+        mock_client.get = AsyncMock(return_value=mock_response)
+
+        result = await devices_service.get_state("router1")
+
+        mock_client.get.assert_called_once_with("/devices/router1/state")
+        assert result == state
+
+    @pytest.mark.asyncio
     async def test_load_devices_merge_operation(self, devices_resource, mock_client):
         """Test loading devices with MERGE operation."""
         existing_devices = [
