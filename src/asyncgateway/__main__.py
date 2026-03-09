@@ -9,5 +9,11 @@ Currently this module is not implemented and serves as a placeholder
 for future CLI functionality.
 """
 
-print("asyncgateway: This library does not currently provide a CLI interface.")
-print("Use: python -c 'import asyncgateway; help(asyncgateway)' for library help.")
+import sys
+
+sys.stdout.write(
+    "asyncgateway: This library does not currently provide a CLI interface.\n"
+)
+sys.stdout.write(
+    "Use: python -c 'import asyncgateway; help(asyncgateway)' for library help.\n"
+)

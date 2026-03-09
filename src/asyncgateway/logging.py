@@ -303,7 +303,7 @@ def fatal(msg: str) -> None:
     """
     log(FATAL, msg)
     print(f"ERROR: {msg}", file=sys.stderr)
-    sys.exit(1)
+    raise SystemExit(1)
 
 
 @cache
