@@ -80,13 +80,48 @@ asyncgateway/
 │   ├── client.py           # Client class with service/resource discovery
 │   ├── exceptions.py       # Exception hierarchy (AsyncGatewayError, ValidationError)
 │   ├── logging.py          # Logging with sensitive data filtering
-│   ├── serdes.py           # JSON/YAML serialization
+│   ├── serdes.py           # JSON / YAML / TOML serialization utilities
 │   ├── services/           # 23 thin async wrappers, one per IAG API tag group
 │   └── resources/          # 22 declarative resource abstractions
 ├── tests/                  # Test files (mock ipsdk, no live IAG needed)
 ├── docs/                   # Documentation
 └── pyproject.toml          # Project configuration and tool settings
 ```
+
+## Optional Dependencies
+
+The core library requires only `ipsdk`.  Additional serialization formats can
+be unlocked by installing optional packages:
+
+| Format | Operation | Package | Python version |
+|--------|-----------|---------|----------------|
+| YAML   | read & write | `PyYAML` | any |
+| TOML   | read | *(stdlib `tomllib`)* | 3.11+ |
+| TOML   | read | `tomli` | 3.10 only |
+| TOML   | write | `tomli-w` | any |
+
+Install a single optional format:
+
+```bash
+uv add PyYAML          # YAML support
+uv add tomli           # TOML read on Python 3.10
+uv add tomli-w         # TOML write (any version)
+```
+
+Install all optional serialization extras at once:
+
+```bash
+uv add PyYAML tomli-w  # tomli only needed on Python 3.10
+```
+
+You can inspect runtime availability from Python:
+
+```python
+from asyncgateway.serdes import YAML_AVAILABLE, TOML_AVAILABLE, TOML_WRITE_AVAILABLE
+```
+
+Calling a function whose dependency is absent raises `ValidationError` (not
+`ImportError`), so callers do not need to guard imports.
 
 ## Development Notes
 
@@ -114,3 +149,4 @@ asyncgateway/
 - For test failures, run with `-v` for more detailed output.
 - If tests mock `os.listdir`, note that `Client.__init__` calls it **twice** — once for `services/` and once for `resources/`. Use `side_effect=[service_files, resource_files]`.
 - YAML support is optional. If `PyYAML` is not installed, YAML paths raise `ValidationError` rather than `ImportError`.
+- TOML read support is optional on Python 3.10 (install `tomli`); on 3.11+ it uses the stdlib `tomllib`. TOML write always requires `tomli-w`.
