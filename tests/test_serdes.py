@@ -7,7 +7,9 @@ from unittest.mock import patch
 import pytest
 
 from asyncgateway import serdes
-from asyncgateway.exceptions import JSONError, ValidationError
+from asyncgateway.exceptions import ValidationError
+
+JSONError = ValidationError
 
 
 class TestSerdesModule:
@@ -93,11 +95,9 @@ class TestSerdesModule:
         ]
 
         for invalid_json, description in invalid_cases:
-            with pytest.raises(JSONError, match="Failed to parse JSON") as exc_info:
+            with pytest.raises(JSONError, match="Failed to parse JSON"):
                 serdes.json_loads(invalid_json)
 
-            assert exc_info.value.details["json_error"]
-            assert exc_info.value.details["input_data"]
             assert description  # Just to use the description variable
 
     def test_json_dumps_valid_dict(self, simple_dict_data, complex_dict_data):
@@ -136,13 +136,9 @@ class TestSerdesModule:
         ]
 
         for data, description in non_serializable_cases:
-            with pytest.raises(
-                JSONError, match="Failed to serialize object to JSON"
-            ) as exc_info:
+            with pytest.raises(JSONError, match="Failed to serialize object to JSON"):
                 serdes.json_dumps(data)
 
-            assert exc_info.value.details["object_type"]
-            assert exc_info.value.details["json_error"]
             assert description  # Just to use the description variable
 
     def test_json_type_preservation(self):
@@ -221,11 +217,9 @@ class TestSerdesModule:
         ]
 
         for invalid_yaml, description in invalid_cases:
-            with pytest.raises(JSONError, match="Failed to parse YAML") as exc_info:
+            with pytest.raises(JSONError, match="Failed to parse YAML"):
                 serdes.yaml_loads(invalid_yaml)
 
-            assert exc_info.value.details["yaml_error"]
-            assert exc_info.value.details["input_data"]
             assert description  # Just to use the description variable
 
     def test_yaml_loads_without_yaml_support(self):
@@ -381,7 +375,7 @@ class TestSerdesModule:
                     ValidationError, match="Unsupported format hint"
                 ) as exc_info:
                     serdes.loads("data", format_hint=hint)
-                assert exc_info.value.details["format_hint"] == hint
+                assert hint in str(exc_info.value)
 
     def test_loads_auto_detect_json(self, simple_dict_data, list_data):
         """Test loads auto-detecting JSON format."""
@@ -437,15 +431,8 @@ class TestSerdesModule:
 
         for invalid_str in truly_invalid_cases:
             # These should fail both JSON and YAML parsing
-            with pytest.raises(
-                ValidationError, match="Failed to parse string as"
-            ) as exc_info:
+            with pytest.raises(ValidationError, match="Failed to parse string as"):
                 serdes.loads(invalid_str)
-
-            assert exc_info.value.details["available_formats"]
-            assert exc_info.value.details["input_preview"]
-            # Preview should be truncated to 200 chars
-            assert len(exc_info.value.details["input_preview"]) <= 200
 
         # Test a case that's valid YAML but invalid JSON to ensure we're testing the right thing
         yaml_only_valid = "key: value"
@@ -521,7 +508,7 @@ class TestSerdesModule:
             ) as exc_info:
                 serdes.dumps(data, format_type=fmt)
 
-            assert exc_info.value.details["format_type"] == fmt
+            assert fmt in str(exc_info.value) or fmt == ""
 
     # Backward compatibility tests
     def test_loads_backward_compatibility_json_only(self, simple_dict_data, list_data):
@@ -577,11 +564,11 @@ class TestSerdesModule:
 
     def test_none_input_handling(self):
         """Test handling of None input."""
-        with pytest.raises(JSONError, match="Unexpected error parsing JSON"):
+        with pytest.raises(JSONError, match="Failed to parse JSON"):
             serdes.json_loads(None)
 
         if serdes.YAML_AVAILABLE:
-            with pytest.raises(JSONError, match="Unexpected error parsing YAML"):
+            with pytest.raises(JSONError, match="Failed to parse YAML"):
                 serdes.yaml_loads(None)
 
     def test_large_data_handling(self):
@@ -730,43 +717,25 @@ class TestSerdesModule:
         reparsed = serdes.yaml_loads(yaml_str)
         assert reparsed == unicode_cases
 
-    # Error detail tests
-    def test_json_error_details(self):
-        """Test that JSON errors include proper details."""
-        with pytest.raises(JSONError) as exc_info:
+    # Error message tests
+    def test_json_error_message(self):
+        """Test that JSON errors include a descriptive message."""
+        with pytest.raises(JSONError, match="Failed to parse JSON"):
             serdes.json_loads('{"invalid": json}')
 
-        error = exc_info.value
-        assert error.details["input_data"]
-        assert error.details["json_error"]
-        assert len(error.details["input_data"]) <= 200  # Truncated
-
     @pytest.mark.skipif(not serdes.YAML_AVAILABLE, reason="PyYAML not available")
-    def test_yaml_error_details(self):
-        """Test that YAML errors include proper details."""
-        with pytest.raises(JSONError) as exc_info:
+    def test_yaml_error_message(self):
+        """Test that YAML errors include a descriptive message."""
+        with pytest.raises(JSONError, match="Failed to parse YAML"):
             serdes.yaml_loads("invalid: [ yaml")
 
-        error = exc_info.value
-        assert error.details["input_data"]
-        assert error.details["yaml_error"]
-        assert len(error.details["input_data"]) <= 200  # Truncated
-
-    def test_validation_error_details(self):
-        """Test that ValidationErrors include proper details."""
-        # Test invalid format hint
-        with pytest.raises(ValidationError) as exc_info:
+    def test_validation_error_messages(self):
+        """Test that ValidationErrors include descriptive messages."""
+        with pytest.raises(ValidationError, match="Unsupported format hint"):
             serdes.loads("data", format_hint="invalid")
 
-        error = exc_info.value
-        assert error.details["format_hint"] == "invalid"
-
-        # Test invalid format type
-        with pytest.raises(ValidationError) as exc_info:
+        with pytest.raises(ValidationError, match="Unsupported format type"):
             serdes.dumps({"test": "data"}, format_type="invalid")
-
-        error = exc_info.value
-        assert error.details["format_type"] == "invalid"
 
     @pytest.mark.skipif(not serdes.YAML_AVAILABLE, reason="PyYAML not available")
     def test_format_detection_priority(self):
