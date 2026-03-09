@@ -2,6 +2,12 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 
+"""Ansible virtual environment service for asyncgateway.
+
+Provides asynchronous methods for listing and refreshing Ansible virtual
+environments registered with the IAG.
+"""
+
 from collections.abc import Mapping
 from typing import Any
 

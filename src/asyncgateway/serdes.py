@@ -2,6 +2,15 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 
+"""JSON and YAML serialization utilities for asyncgateway.
+
+``loads`` and ``dumps`` are the canonical public functions; they auto-detect or
+accept an explicit format hint.  Low-level ``json_loads``, ``json_dumps``,
+``yaml_loads``, and ``yaml_dumps`` variants are also available.  YAML support is
+optional: ``YAML_AVAILABLE`` is ``True`` only when PyYAML is installed; missing
+support raises ``ValidationError`` rather than ``ImportError``.
+"""
+
 import json
 import traceback
 

@@ -2,6 +2,12 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 
+"""HTTP request service for asyncgateway.
+
+Provides asynchronous methods for executing arbitrary outbound HTTP requests
+through the IAG, retrieving the request schema, and querying execution history.
+"""
+
 from collections.abc import Mapping
 from typing import Any
 

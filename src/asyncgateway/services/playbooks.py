@@ -2,6 +2,17 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 
+"""Ansible playbook service for asyncgateway.
+
+Provides asynchronous methods for managing Ansible playbooks on the IAG,
+including CRUD operations, execution, dry-run, schema management, execution
+history, and refresh from external sources.
+
+Note: ``get_all`` uses manual pagination with ``meta["count"]`` rather than the
+shared ``_get_all`` helper because the playbooks endpoint uses a different
+metadata key from all other list endpoints.
+"""
+
 from collections.abc import Mapping
 from typing import Any
 

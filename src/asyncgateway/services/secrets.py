@@ -2,6 +2,12 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 
+"""Secret management service for asyncgateway.
+
+Provides asynchronous methods for creating, listing, updating, and deleting
+secrets stored in the IAG.
+"""
+
 from collections.abc import Mapping
 from typing import Any
 

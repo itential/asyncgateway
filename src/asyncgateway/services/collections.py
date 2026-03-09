@@ -2,6 +2,13 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 
+"""Ansible collection management service for asyncgateway.
+
+Provides asynchronous methods for managing Ansible collections installed on the
+IAG, including CRUD operations on collections and the execution, schema
+management, and history retrieval of their modules and roles.
+"""
+
 from collections.abc import Mapping
 from typing import Any
 

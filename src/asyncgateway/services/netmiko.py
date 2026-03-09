@@ -2,6 +2,13 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 
+"""Netmiko service for asyncgateway.
+
+Provides asynchronous methods for sending CLI commands and configuration sets
+to network devices via the Netmiko driver on the IAG, along with execution
+history retrieval and schema access.
+"""
+
 from collections.abc import Mapping
 from typing import Any
 

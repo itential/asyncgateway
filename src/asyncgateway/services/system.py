@@ -2,6 +2,13 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 
+"""System service for asyncgateway.
+
+Provides asynchronous methods for querying IAG system status, polling
+availability, retrieving the audit log and execution history, and fetching
+the OpenAPI specification.
+"""
+
 from collections.abc import Mapping
 from typing import Any
 

@@ -2,6 +2,12 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 
+"""Terraform resource for asyncgateway.
+
+Provides operations for executing Terraform lifecycle commands (init, plan,
+apply, validate, destroy) and managing Terraform schemas on the IAG.
+"""
+
 from collections.abc import Mapping
 from typing import Any
 

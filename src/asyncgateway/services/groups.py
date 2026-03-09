@@ -2,6 +2,13 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 
+"""Device group management service for asyncgateway.
+
+Provides asynchronous methods for creating, reading, updating, and deleting
+device groups on the IAG, including membership management for devices, child
+groups, and group variables.
+"""
+
 from collections.abc import Mapping
 from typing import Any
 

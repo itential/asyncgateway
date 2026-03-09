@@ -2,6 +2,15 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 
+"""Client entry point for asyncgateway.
+
+Provides the ``Client`` class, which discovers and instantiates all services and
+resources at init time by scanning the ``services/`` and ``resources/`` directories.
+Services are available as ``client.services.<name>`` and resources as
+``client.resources.<name>``.  ``client.load(path, op)`` reads JSON/YAML files from a
+directory tree and dispatches to each matching service's ``load()`` method.
+"""
+
 import importlib
 import importlib.util
 import os

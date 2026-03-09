@@ -2,6 +2,13 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 
+"""gNOI service for asyncgateway.
+
+Provides asynchronous methods for executing gNOI operations against network
+devices via the IAG, including ping, reboot, traceroute, time, package
+management, and interface/protocol clear commands.
+"""
+
 from collections.abc import Mapping
 from typing import Any
 

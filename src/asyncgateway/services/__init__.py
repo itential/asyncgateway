@@ -22,7 +22,7 @@ class Operation:
 
     Example:
         ```python
-        await client.devices.import_devices(device_list, Operation.MERGE)
+        await client.load('/data', Operation.MERGE)
         ```
     """
 
