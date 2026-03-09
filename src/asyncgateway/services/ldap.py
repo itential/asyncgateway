@@ -1,6 +1,12 @@
 # Copyright (c) 2025 Itential, Inc
 # GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 
+"""LDAP service for asyncgateway.
+
+Provides an asynchronous method for testing LDAP bind credentials against the
+directory server configured in the IAG.
+"""
+
 from collections.abc import Mapping
 from typing import Any
 

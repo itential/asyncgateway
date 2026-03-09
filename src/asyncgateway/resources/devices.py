@@ -1,6 +1,13 @@
 # Copyright (c) 2025 Itential, Inc
 # GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 
+"""Device resource for asyncgateway.
+
+Provides declarative ``ensure`` and ``absent`` operations for IAG devices, along
+with bulk ``load`` (MERGE/OVERWRITE/REPLACE) and ``dump`` (JSON/YAML) operations
+for importing and exporting device configurations to and from the filesystem.
+"""
+
 from collections.abc import Mapping
 from pathlib import Path
 from typing import Any

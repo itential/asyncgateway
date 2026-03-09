@@ -1,6 +1,12 @@
 # Copyright (c) 2025 Itential, Inc
 # GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 
+"""gNOI resource for asyncgateway.
+
+Thin resource wrapper over the gNOI service for executing network operations
+commands (ping, reboot, traceroute, etc.) against network devices via the IAG.
+"""
+
 from collections.abc import Mapping
 from typing import Any
 

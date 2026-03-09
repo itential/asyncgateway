@@ -1,6 +1,13 @@
 # Copyright (c) 2025 Itential, Inc
 # GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 
+"""Inventory resource for asyncgateway.
+
+Provides declarative ``ensure_device`` and ``absent_device`` operations for
+devices within external inventory sources connected to the IAG, along with
+inventory refresh.
+"""
+
 from collections.abc import Mapping
 from typing import Any
 

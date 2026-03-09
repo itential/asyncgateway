@@ -1,6 +1,12 @@
 # Copyright (c) 2025 Itential, Inc
 # GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 
+"""Module resource for asyncgateway.
+
+Provides operations for running IAG modules and managing their schemas,
+composing the modules service into a consistent execution interface.
+"""
+
 from collections.abc import Mapping
 from typing import Any
 

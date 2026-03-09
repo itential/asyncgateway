@@ -1,6 +1,13 @@
 # Copyright (c) 2025 Itential, Inc
 # GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 
+"""RBAC resource for asyncgateway.
+
+Provides declarative operations for managing IAG RBAC groups, including
+``ensure_group``/``absent_group`` and helpers for assigning and removing roles
+and users from groups.
+"""
+
 from collections.abc import Mapping
 from typing import Any
 

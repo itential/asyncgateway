@@ -1,6 +1,13 @@
 # Copyright (c) 2025 Itential, Inc
 # GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 
+"""Role-based access control (RBAC) service for asyncgateway.
+
+Provides asynchronous methods for managing RBAC groups and their role and user
+memberships on the IAG, along with read access to roles and per-user role/group
+lookups.
+"""
+
 from collections.abc import Mapping
 from typing import Any
 

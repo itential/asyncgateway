@@ -1,6 +1,13 @@
 # Copyright (c) 2025 Itential, Inc
 # GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 
+"""Git integration service for asyncgateway.
+
+Provides asynchronous methods for managing Git SSH keys, integrations, and
+repositories registered with the IAG, including clone, pull, reset, and
+status operations.
+"""
+
 from collections.abc import Mapping
 from typing import Any
 
