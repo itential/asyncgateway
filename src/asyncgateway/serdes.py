@@ -4,7 +4,7 @@
 import json
 import traceback
 
-from . import exceptions, logger
+from . import exceptions, logging
 
 try:
     import yaml
@@ -123,14 +123,14 @@ def json_loads(s: str) -> dict | list:
     try:
         return json.loads(s)
     except json.JSONDecodeError as exc:
-        logger.error(traceback.format_exc())
+        logging.error(traceback.format_exc())
         input_data = str(s)[:200] if s is not None else "None"
         raise exceptions.JSONError(
             f"Failed to parse JSON: {str(exc)}",
             details={"input_data": input_data, "json_error": str(exc)},
         ) from exc
     except Exception as exc:
-        logger.error(traceback.format_exc())
+        logging.error(traceback.format_exc())
         input_data = str(s)[:200] if s is not None else "None"
         raise exceptions.JSONError(
             f"Unexpected error parsing JSON: {str(exc)}",
@@ -153,13 +153,13 @@ def json_dumps(o: dict | list) -> str:
     try:
         return json.dumps(o)
     except (TypeError, ValueError) as exc:
-        logger.error(traceback.format_exc())
+        logging.error(traceback.format_exc())
         raise exceptions.JSONError(
             f"Failed to serialize object to JSON: {str(exc)}",
             details={"object_type": str(type(o)), "json_error": str(exc)},
         ) from exc
     except Exception as exc:
-        logger.error(traceback.format_exc())
+        logging.error(traceback.format_exc())
         raise exceptions.JSONError(
             f"Unexpected error serializing JSON: {str(exc)}",
             details={"object_type": str(type(o)), "original_error": str(exc)},
@@ -188,14 +188,14 @@ def yaml_loads(s: str) -> dict | list:
     try:
         return yaml.safe_load(s)
     except yaml.YAMLError as exc:
-        logger.error(traceback.format_exc())
+        logging.error(traceback.format_exc())
         input_data = str(s)[:200] if s is not None else "None"
         raise exceptions.JSONError(
             f"Failed to parse YAML: {str(exc)}",
             details={"input_data": input_data, "yaml_error": str(exc)},
         ) from exc
     except Exception as exc:
-        logger.error(traceback.format_exc())
+        logging.error(traceback.format_exc())
         input_data = str(s)[:200] if s is not None else "None"
         raise exceptions.JSONError(
             f"Unexpected error parsing YAML: {str(exc)}",
@@ -235,13 +235,13 @@ def yaml_dumps(o: dict | list, **kwargs) -> str:
     try:
         return yaml.dump(o, **yaml_options)
     except yaml.YAMLError as exc:
-        logger.error(traceback.format_exc())
+        logging.error(traceback.format_exc())
         raise exceptions.JSONError(
             f"Failed to serialize object to YAML: {str(exc)}",
             details={"object_type": str(type(o)), "yaml_error": str(exc)},
         ) from exc
     except Exception as exc:
-        logger.error(traceback.format_exc())
+        logging.error(traceback.format_exc())
         raise exceptions.JSONError(
             f"Unexpected error serializing YAML: {str(exc)}",
             details={"object_type": str(type(o)), "original_error": str(exc)},
