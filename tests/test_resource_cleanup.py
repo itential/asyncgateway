@@ -9,8 +9,8 @@ from asyncgateway.client import Client
 
 
 class TestResourceCleanup:
-    @patch("asyncgateway.client.ipsdk.gateway_factory")
-    @patch("asyncgateway.client.os.listdir")
+    @patch("ipsdk.gateway_factory")
+    @patch("os.listdir")
     def test_client_creates_ipsdk_client(self, mock_listdir, mock_gateway_factory):
         """Test that the client properly creates an ipsdk client."""
         mock_listdir.side_effect = [[], []]
@@ -27,8 +27,8 @@ class TestResourceCleanup:
         assert isinstance(client, Client)
 
     @pytest.mark.asyncio
-    @patch("asyncgateway.client.ipsdk.gateway_factory")
-    @patch("asyncgateway.client.os.listdir")
+    @patch("ipsdk.gateway_factory")
+    @patch("os.listdir")
     async def test_client_as_async_context_manager(
         self, mock_listdir, mock_gateway_factory
     ):
@@ -44,8 +44,8 @@ class TestResourceCleanup:
         # Test should complete without errors
 
     @pytest.mark.asyncio
-    @patch("asyncgateway.client.ipsdk.gateway_factory")
-    @patch("asyncgateway.client.os.listdir")
+    @patch("ipsdk.gateway_factory")
+    @patch("os.listdir")
     async def test_aenter_returns_client(self, mock_listdir, mock_gateway_factory):
         """Test that __aenter__ returns the client instance."""
         mock_listdir.side_effect = [[], []]
@@ -59,8 +59,8 @@ class TestResourceCleanup:
         assert result is client
 
     @pytest.mark.asyncio
-    @patch("asyncgateway.client.ipsdk.gateway_factory")
-    @patch("asyncgateway.client.os.listdir")
+    @patch("ipsdk.gateway_factory")
+    @patch("os.listdir")
     async def test_aexit_no_exceptions(self, mock_listdir, mock_gateway_factory):
         """Test that __aexit__ completes without raising exceptions."""
         mock_listdir.side_effect = [[], []]
@@ -73,8 +73,8 @@ class TestResourceCleanup:
         await client.__aexit__(None, None, None)
 
     @pytest.mark.asyncio
-    @patch("asyncgateway.client.ipsdk.gateway_factory")
-    @patch("asyncgateway.client.os.listdir")
+    @patch("ipsdk.gateway_factory")
+    @patch("os.listdir")
     async def test_aexit_with_exception_info(self, mock_listdir, mock_gateway_factory):
         """Test that __aexit__ handles exception info properly."""
         mock_listdir.side_effect = [[], []]
@@ -87,8 +87,8 @@ class TestResourceCleanup:
         await client.__aexit__(ValueError, ValueError("test"), None)
 
     @pytest.mark.asyncio
-    @patch("asyncgateway.client.ipsdk.gateway_factory")
-    @patch("asyncgateway.client.os.listdir")
+    @patch("ipsdk.gateway_factory")
+    @patch("os.listdir")
     async def test_multiple_aexit_calls(self, mock_listdir, mock_gateway_factory):
         """Test that multiple __aexit__ calls don't cause issues."""
         mock_listdir.side_effect = [[], []]
@@ -104,8 +104,8 @@ class TestResourceCleanup:
         await client.__aexit__(None, None, None)
 
     @pytest.mark.asyncio
-    @patch("asyncgateway.client.ipsdk.gateway_factory")
-    @patch("asyncgateway.client.os.listdir")
+    @patch("ipsdk.gateway_factory")
+    @patch("os.listdir")
     async def test_client_without_context_manager(
         self, mock_listdir, mock_gateway_factory
     ):
@@ -123,10 +123,10 @@ class TestResourceCleanup:
         await client.__aexit__(None, None, None)
 
     @pytest.mark.asyncio
-    @patch("asyncgateway.client.ipsdk.gateway_factory")
-    @patch("asyncgateway.client.os.listdir")
-    @patch("asyncgateway.client.importlib.util.spec_from_file_location")
-    @patch("asyncgateway.client.importlib.util.module_from_spec")
+    @patch("ipsdk.gateway_factory")
+    @patch("os.listdir")
+    @patch("importlib.util.spec_from_file_location")
+    @patch("importlib.util.module_from_spec")
     async def test_services_initialized_with_ipsdk_client(
         self,
         mock_module_from_spec,
@@ -158,8 +158,8 @@ class TestResourceCleanup:
             mock_service_class.assert_called_once_with(mock_client)
 
     @pytest.mark.asyncio
-    @patch("asyncgateway.client.ipsdk.gateway_factory")
-    @patch("asyncgateway.client.os.listdir")
+    @patch("ipsdk.gateway_factory")
+    @patch("os.listdir")
     async def test_client_parameters_passed_to_ipsdk(
         self, mock_listdir, mock_gateway_factory
     ):
@@ -181,8 +181,8 @@ class TestResourceCleanup:
         mock_gateway_factory.assert_called_once_with(want_async=True, **client_kwargs)
 
     @pytest.mark.asyncio
-    @patch("asyncgateway.client.ipsdk.gateway_factory")
-    @patch("asyncgateway.client.os.listdir")
+    @patch("ipsdk.gateway_factory")
+    @patch("os.listdir")
     async def test_context_manager_exception_handling(
         self, mock_listdir, mock_gateway_factory
     ):

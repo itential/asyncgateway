@@ -1,7 +1,8 @@
 # Copyright (c) 2025 Itential, Inc
 # GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-from typing import Any, List, Mapping
+from collections.abc import Mapping
+from typing import Any
 
 from asyncgateway.services import ServiceBase
 
@@ -21,7 +22,7 @@ class Service(ServiceBase):
         res = await self.client.get("/system/poll")
         return res.json()
 
-    async def get_audit(self, **params) -> List[Mapping[str, Any]]:
+    async def get_audit(self, **params) -> list[Mapping[str, Any]]:
         """Get system audit log."""
         res = await self.client.get("/system/audit", params=params)
         return res.json()

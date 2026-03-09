@@ -7,7 +7,8 @@ This module provides asynchronous methods for managing Gateway configuration
 settings, allowing retrieval and updates of system-wide configuration parameters.
 """
 
-from typing import Any, Mapping
+from collections.abc import Mapping
+from typing import Any
 
 from asyncgateway.services import ServiceBase
 

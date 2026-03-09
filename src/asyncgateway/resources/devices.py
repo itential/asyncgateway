@@ -1,8 +1,9 @@
 # Copyright (c) 2025 Itential, Inc
 # GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 
+from collections.abc import Mapping
 from pathlib import Path
-from typing import Any, Dict, List, Mapping, Optional
+from typing import Any
 
 from asyncgateway import serdes
 from asyncgateway.exceptions import AsyncGatewayError
@@ -14,7 +15,9 @@ class Resource(ResourceBase):
 
     name: str = "devices"
 
-    async def ensure(self, name: str, variables: Optional[Mapping[str, Any]] = None) -> Mapping[str, Any]:
+    async def ensure(
+        self, name: str, variables: Mapping[str, Any] | None = None
+    ) -> Mapping[str, Any]:
         """Ensure a device exists. Create if missing, optionally update variables."""
         try:
             device = await self.services.devices.get(name)
@@ -34,7 +37,7 @@ class Resource(ResourceBase):
         except Exception:
             pass
 
-    async def load(self, data: List[Mapping[str, Any]], op: str) -> Dict[str, Any]:
+    async def load(self, data: list[Mapping[str, Any]], op: str) -> dict[str, Any]:
         """Load all devices from data based on the operation.
 
         Args:
@@ -56,7 +59,7 @@ class Resource(ResourceBase):
                 f"Invalid operation '{op}'. Must be one of: {valid_operations}"
             )
 
-        results: Dict[str, Any] = {
+        results: dict[str, Any] = {
             "operation": op,
             "devices_processed": 0,
             "devices_created": 0,
@@ -101,11 +104,15 @@ class Resource(ResourceBase):
                         elif op == Operation.OVERWRITE:
                             # Replace existing device
                             await self.services.devices.delete(device_name)
-                            await self.services.devices.create(device_name, device_variables)
+                            await self.services.devices.create(
+                                device_name, device_variables
+                            )
                             results["devices_updated"] += 1
                     else:
                         # Create new device
-                        await self.services.devices.create(device_name, device_variables)
+                        await self.services.devices.create(
+                            device_name, device_variables
+                        )
                         results["devices_created"] += 1
 
                 except Exception as e:
@@ -123,7 +130,7 @@ class Resource(ResourceBase):
         individual_files: bool = False,
         format_type: str = "json",
         devices_folder: str = "devices",
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Dump all devices to files in the devices folder.
 
         Args:
@@ -147,7 +154,7 @@ class Resource(ResourceBase):
         if format_type == "yml":
             format_type = "yaml"
 
-        results: Dict[str, Any] = {
+        results: dict[str, Any] = {
             "format": format_type,
             "individual_files": individual_files,
             "devices_folder": devices_folder,

@@ -68,11 +68,9 @@ security: ## Run bandit security analysis
 # CI
 # ------------------------------------------------------------------------------
 
-.PHONY: ci premerge
+.PHONY: ci
 
 ci: clean lint security test ## Run all checks (required before committing)
-
-premerge: ci ## Alias for ci (backwards compat)
 
 # ------------------------------------------------------------------------------
 # Tox (multi-version)

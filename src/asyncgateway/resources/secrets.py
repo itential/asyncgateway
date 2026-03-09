@@ -1,7 +1,8 @@
 # Copyright (c) 2025 Itential, Inc
 # GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-from typing import Any, Dict, Mapping
+from collections.abc import Mapping
+from typing import Any
 
 from asyncgateway.resources import ResourceBase
 
@@ -11,7 +12,7 @@ class Resource(ResourceBase):
 
     name: str = "secrets"
 
-    async def ensure(self, params: Dict[str, Any]) -> Mapping[str, Any]:
+    async def ensure(self, params: dict[str, Any]) -> Mapping[str, Any]:
         """Ensure a secret exists. Try update first, then create."""
         try:
             result = await self.services.secrets.update(params)
@@ -22,7 +23,7 @@ class Resource(ResourceBase):
                 raise
         return result
 
-    async def absent(self, params: Dict[str, Any]) -> None:
+    async def absent(self, params: dict[str, Any]) -> None:
         """Ensure a secret does not exist."""
         try:
             await self.services.secrets.delete(params)

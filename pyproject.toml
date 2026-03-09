@@ -111,6 +111,14 @@ indent-style = "space"
 skip-magic-trailing-comma = false
 line-ending = "auto"
 
+[tool.mypy]
+python_version = "3.11"
+warn_unused_configs = true
+
+[[tool.mypy.overrides]]
+module = ["ipsdk.*", "yaml"]
+ignore_missing_imports = true
+
 [tool.bandit]
 exclude_dirs = ["tests"]
-skips = ["B101"]  # Skip assert_used test
+skips = ["B101", "B110"]  # Skip assert_used and try_except_pass (intentional pattern for "not found" detection in resources)

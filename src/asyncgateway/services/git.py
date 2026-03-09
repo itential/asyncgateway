@@ -1,7 +1,8 @@
 # Copyright (c) 2025 Itential, Inc
 # GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-from typing import Any, Dict, List, Mapping
+from collections.abc import Mapping
+from typing import Any
 
 from asyncgateway.services import ServiceBase
 
@@ -11,17 +12,17 @@ class Service(ServiceBase):
 
     name: str = "git"
 
-    async def get_keys(self, **params) -> List[Mapping[str, Any]]:
+    async def get_keys(self, **params) -> list[Mapping[str, Any]]:
         """Get all Git SSH keys."""
         res = await self.client.get("/git/keys", params=params)
         return res.json()
 
-    async def create_key(self, params: Dict[str, Any]) -> Mapping[str, Any]:
+    async def create_key(self, params: dict[str, Any]) -> Mapping[str, Any]:
         """Create a new Git SSH key."""
         res = await self.client.post("/git/keys", json=params)
         return res.json()
 
-    async def upload_key(self, params: Dict[str, Any]) -> Mapping[str, Any]:
+    async def upload_key(self, params: dict[str, Any]) -> Mapping[str, Any]:
         """Upload a Git SSH key."""
         res = await self.client.post("/git/keys/upload", json=params)
         return res.json()
@@ -35,17 +36,19 @@ class Service(ServiceBase):
         """Delete a Git SSH key."""
         await self.client.delete(f"/git/keys/{key_id}")
 
-    async def update_key(self, key_id: str, params: Dict[str, Any]) -> Mapping[str, Any]:
+    async def update_key(
+        self, key_id: str, params: dict[str, Any]
+    ) -> Mapping[str, Any]:
         """Update a Git SSH key."""
         res = await self.client.put(f"/git/keys/{key_id}", json=params)
         return res.json()
 
-    async def get_integrations(self, **params) -> List[Mapping[str, Any]]:
+    async def get_integrations(self, **params) -> list[Mapping[str, Any]]:
         """Get all Git integrations."""
         res = await self.client.get("/git/integrations", params=params)
         return res.json()
 
-    async def create_integration(self, params: Dict[str, Any]) -> Mapping[str, Any]:
+    async def create_integration(self, params: dict[str, Any]) -> Mapping[str, Any]:
         """Create a new Git integration."""
         res = await self.client.post("/git/integrations", json=params)
         return res.json()
@@ -59,17 +62,19 @@ class Service(ServiceBase):
         """Delete a Git integration."""
         await self.client.delete(f"/git/integrations/{int_id}")
 
-    async def update_integration(self, int_id: str, params: Dict[str, Any]) -> Mapping[str, Any]:
+    async def update_integration(
+        self, int_id: str, params: dict[str, Any]
+    ) -> Mapping[str, Any]:
         """Update a Git integration."""
         res = await self.client.put(f"/git/integrations/{int_id}", json=params)
         return res.json()
 
-    async def get_repositories(self, **params) -> List[Mapping[str, Any]]:
+    async def get_repositories(self, **params) -> list[Mapping[str, Any]]:
         """Get all Git repositories."""
         res = await self.client.get("/git/repositories", params=params)
         return res.json()
 
-    async def create_repository(self, params: Dict[str, Any]) -> Mapping[str, Any]:
+    async def create_repository(self, params: dict[str, Any]) -> Mapping[str, Any]:
         """Create a new Git repository."""
         res = await self.client.post("/git/repositories", json=params)
         return res.json()
@@ -83,7 +88,9 @@ class Service(ServiceBase):
         """Delete a Git repository."""
         await self.client.delete(f"/git/repositories/{repo_id}")
 
-    async def update_repository(self, repo_id: str, params: Dict[str, Any]) -> Mapping[str, Any]:
+    async def update_repository(
+        self, repo_id: str, params: dict[str, Any]
+    ) -> Mapping[str, Any]:
         """Update a Git repository."""
         res = await self.client.put(f"/git/repositories/{repo_id}", json=params)
         return res.json()

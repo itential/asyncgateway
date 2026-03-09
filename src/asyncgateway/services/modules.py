@@ -1,7 +1,8 @@
 # Copyright (c) 2025 Itential, Inc
 # GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-from typing import Any, Dict, List, Mapping
+from collections.abc import Mapping
+from typing import Any
 
 from asyncgateway.services import ServiceBase
 
@@ -16,7 +17,7 @@ class Service(ServiceBase):
         res = await self.client.get(f"/modules/{name}")
         return res.json()
 
-    async def get_all(self, **params) -> List[Mapping[str, Any]]:
+    async def get_all(self, **params) -> list[Mapping[str, Any]]:
         """Retrieve all modules from the Gateway API."""
         return await self._get_all("/modules", **params)
 
@@ -25,7 +26,9 @@ class Service(ServiceBase):
         res = await self.client.get(f"/modules/{name}/schema")
         return res.json()
 
-    async def update_schema(self, name: str, schema: Mapping[str, Any]) -> Mapping[str, Any]:
+    async def update_schema(
+        self, name: str, schema: Mapping[str, Any]
+    ) -> Mapping[str, Any]:
         """Update the schema for a specific module."""
         res = await self.client.put(f"/modules/{name}/schema", json=schema)
         return res.json()
@@ -35,12 +38,12 @@ class Service(ServiceBase):
         res = await self.client.delete(f"/modules/{name}/schema")
         return res.json()
 
-    async def execute(self, name: str, params: Dict[str, Any]) -> Mapping[str, Any]:
+    async def execute(self, name: str, params: dict[str, Any]) -> Mapping[str, Any]:
         """Execute a module."""
         res = await self.client.post(f"/modules/{name}/execute", json=params)
         return res.json()
 
-    async def get_history(self, name: str, **params) -> List[Mapping[str, Any]]:
+    async def get_history(self, name: str, **params) -> list[Mapping[str, Any]]:
         """Get execution history for a module."""
         res = await self.client.get(f"/modules/{name}/history", params=params)
         return res.json()
