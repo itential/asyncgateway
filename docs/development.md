@@ -1,10 +1,10 @@
 # Development Environment Setup
 
-This guide will help you set up a development environment for the asyncgateway project.
+This guide covers setting up a development environment for asyncgateway.
 
 ## Prerequisites
 
-- Python 3.8 or higher
+- Python 3.10 or higher (dev environment pinned to 3.11 via `.python-version`)
 - Git
 - [uv](https://github.com/astral-sh/uv) package manager
 
@@ -27,10 +27,6 @@ This guide will help you set up a development environment for the asyncgateway p
 
 3. **Set up the development environment:**
    ```bash
-   # Install all dependencies and sync the virtual environment
-   uv sync
-
-   # Install development dependencies
    uv sync --group dev
    ```
 
@@ -39,69 +35,82 @@ This guide will help you set up a development environment for the asyncgateway p
 ### Package Management
 - **Add a dependency:** `uv add <package>`
 - **Remove a dependency:** `uv remove <package>`
-- **Sync dependencies:** `uv sync`
+- **Sync dependencies:** `uv sync --group dev`
 
 ### Running Tests
 - **Run all tests:** `uv run pytest`
 - **Run tests with verbose output:** `uv run pytest -v`
-- **Run tests with coverage:** `uv run pytest --cov`
+- **Run tests with coverage:** `uv run pytest -v --cov`
 - **Run specific test pattern:** `uv run pytest -k <pattern>`
-- **Run tests in specific directory:** `uv run pytest tests/`
+
+No live IAG instance is required — all tests mock `ipsdk`.
+
+### Multi-version Testing
+
+Tests run across Python 3.10–3.13 via tox:
+
+```bash
+tox                # all versions
+tox -e py312       # single version
+```
 
 ### Code Quality
-- **Check code style:** `uv run ruff check`
-- **Format code:** `uv run ruff format`
-- **Run type checking:** `uv run mypy src/`
-- **Security linting:** `uv run bandit -r src/`
+- **Lint:** `uv run ruff check src tests`
+- **Format:** `uv run ruff format src tests`
+- **Type check:** `uv run mypy src/`
+- **Security scan:** `uv run bandit -r src/asyncgateway --configfile pyproject.toml`
+
+### Full Local CI
+
+Run the complete CI suite (lint + typecheck + security + tests) with:
+
+```bash
+make ci
+```
 
 ### Building the Package
 - **Build distributions:** `uv build`
-- **Alternative build:** `python -m build`
-
-### Running Examples
-- **Run example scripts:**
-  ```bash
-  uv run python examples/get.py
-  uv run python examples/add_devices.py
-  ```
 
 ## Project Structure
 
 ```
 asyncgateway/
 ├── src/asyncgateway/
-│   ├── client.py           # Main async client class
-│   ├── services/           # Service modules (devices, etc.)
-│   ├── exceptions.py       # Exception hierarchy
-│   └── logger.py          # Logging configuration
-├── tests/                 # Test files
-├── examples/              # Example scripts
-├── docs/                  # Documentation
-└── pyproject.toml         # Project configuration
+│   ├── __init__.py         # Public API: client, logging
+│   ├── client.py           # Client class with service/resource discovery
+│   ├── exceptions.py       # Exception hierarchy (AsyncGatewayError, ValidationError)
+│   ├── logging.py          # Logging with sensitive data filtering
+│   ├── serdes.py           # JSON/YAML serialization
+│   ├── services/           # 23 thin async wrappers, one per IAG API tag group
+│   └── resources/          # 22 declarative resource abstractions
+├── tests/                  # Test files (mock ipsdk, no live IAG needed)
+├── docs/                   # Documentation
+└── pyproject.toml          # Project configuration and tool settings
 ```
 
 ## Development Notes
 
-- The project uses a dynamic service loading pattern where services are discovered from the `services/` directory
-- Each service module must have a `Service` class inheriting from `ServiceBase`
-- Services are automatically attached to the client instance
-- The project uses `ipsdk` for Itential Gateway communication and `httpx` for HTTP requests
+- Services and resources are filesystem-discovered at client init. Adding a file with a `Service` or `Resource` class and a `name` attribute is sufficient for registration — no other wiring required.
+- `Operation` (`MERGE`, `REPLACE`, `OVERWRITE`) is a plain string class, not an enum. It lives in `services/__init__.py` and is re-exported from `resources/__init__.py`.
+- Logging is silent by default (level `NONE = 100`). Enable with `asyncgateway.logging.set_level(asyncgateway.logging.DEBUG)`.
+- `client.load(path, op)` reads files from a directory tree and dispatches to `service.load()`. `client.resources.devices.load(data, op)` takes an in-memory list. These are separate code paths.
+- `playbooks.get_all()` uses a manual pagination loop and does not call `_get_all()` — the playbooks endpoint uses `meta["count"]` rather than `meta["total_count"]`.
 
 ## Contributing
 
-1. Make your changes following the existing code style
-2. Run the code quality tools before committing:
+1. Make your changes following the existing code style.
+2. Run the full CI suite before committing:
    ```bash
-   uv run ruff format
-   uv run ruff check
-   uv run mypy src/
-   uv run pytest
+   make ci
    ```
-3. Ensure all tests pass and coverage remains high
-4. Follow the existing exception handling patterns using the classification utilities
+3. Ensure all tests pass and coverage remains high.
+4. Raise typed exceptions from `exceptions.py`. Never raise bare `Exception`.
+5. Services must be thin — one method per API operation, return `res.json()`, no logic.
+6. Resources catch broad `Exception` for "not found" detection (ipsdk exception types are not part of the public contract).
 
 ## Troubleshooting
 
-- If you encounter import errors, ensure all dependencies are installed with `uv sync`
-- For test failures, run with `-v` flag for more detailed output
-- Check the `CLAUDE.md` file for additional development guidance and known issues
+- If you encounter import errors, ensure all dependencies are installed with `uv sync --group dev`.
+- For test failures, run with `-v` for more detailed output.
+- If tests mock `os.listdir`, note that `Client.__init__` calls it **twice** — once for `services/` and once for `resources/`. Use `side_effect=[service_files, resource_files]`.
+- YAML support is optional. If `PyYAML` is not installed, YAML paths raise `ValidationError` rather than `ImportError`.
