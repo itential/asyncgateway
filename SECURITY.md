@@ -7,8 +7,21 @@ receive backported security patches.
 
 | Version | Supported |
 |---------|-----------|
-| latest  | Yes       |
-| older   | No        |
+| 0.1.0   | Yes       |
+
+## Release Security Notes
+
+### 0.1.0 (2026-03-09)
+
+No security vulnerabilities were identified or patched in this initial release.
+`bandit` static analysis reports zero issues across all 3,305 lines of source
+code. The following security-relevant hardening was applied:
+
+- SPDX license headers added to all source files for supply chain transparency (#11)
+- Typed exception hierarchy prevents accidental leakage of raw HTTP details (#6)
+- Credentials and secrets are never logged — default log level is silent (100) (#6)
+- `certifi` updated to 2026-02-25 for current CA bundle
+- `ipsdk` updated from 0.3.0 to 0.8.0 (upstream dependency upgrade)
 
 ## Reporting a Vulnerability
 
