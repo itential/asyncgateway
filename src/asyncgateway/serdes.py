@@ -15,27 +15,18 @@ except ImportError:
 
 
 def loads(s: str, format_hint: str | None = None) -> dict | list:
-    """Automatically detect format and load from string
-
-    This function replaces the previous JSON-only loads() function and now supports
-    both JSON and YAML formats with automatic detection.
+    """Automatically detect format and load from string.
 
     Args:
-        s (str): The string to parse (JSON or YAML)
-        format_hint (str, optional): Format hint ('json' or 'yaml')
-            If provided, uses that format directly
+        s: The string to parse (JSON or YAML).
+        format_hint: Optional format hint ('json' or 'yaml'). If omitted, JSON
+            is tried first, then YAML.
 
     Returns:
-        A dict or list object
+        A dict or list object.
 
     Raises:
-        ValidationError: If format cannot be determined or parsing fails
-        JSONError: If parsing fails
-
-    Note:
-        For backward compatibility with existing JSON-only usage:
-        - When called with just a string parameter, tries JSON first, then YAML
-        - Maintains the same error types as the original JSON-only function
+        ValidationError: If the format hint is unsupported, or if parsing fails.
     """
     if format_hint:
         if format_hint.lower() == "json":
@@ -44,58 +35,36 @@ def loads(s: str, format_hint: str | None = None) -> dict | list:
             return yaml_loads(s)
         else:
             raise exceptions.ValidationError(
-                f"Unsupported format hint: {format_hint}. Use 'json', 'yaml', or 'yml'",
-                details={"format_hint": format_hint},
+                f"Unsupported format hint: {format_hint!r}. Use 'json' or 'yaml'."
             )
 
-    # Try JSON first (faster and more common, maintains backward compatibility)
+    # Try JSON first (faster and more common)
     try:
         return json_loads(s)
-    except exceptions.JSONError:
-        # If JSON fails, try YAML
+    except exceptions.ValidationError:
         if YAML_AVAILABLE:
             try:
                 return yaml_loads(s)
-            except exceptions.JSONError:
+            except exceptions.ValidationError:
                 pass
 
-        # If both fail, provide helpful error
-        available_formats = ["JSON"]
-        if YAML_AVAILABLE:
-            available_formats.append("YAML")
-
-        raise exceptions.ValidationError(
-            f"Failed to parse string as {' or '.join(available_formats)}. "
-            f"Check format and syntax.",
-            details={
-                "available_formats": available_formats,
-                "input_preview": str(s)[:200] if s else "None",
-            },
-        ) from None
+    available = "JSON or YAML" if YAML_AVAILABLE else "JSON"
+    raise exceptions.ValidationError(f"Failed to parse string as {available}.")
 
 
 def dumps(o: dict | list, format_type: str = "json", **kwargs) -> str:
-    """Serialize object to string in specified format
-
-    This function replaces the previous JSON-only dumps() function and now supports
-    both JSON and YAML formats.
+    """Serialize object to string in the specified format.
 
     Args:
-        o (list, dict): The object to serialize
-        format_type (str): Output format ('json' or 'yaml'), defaults to 'json'
-        **kwargs: Additional options passed to the serializer
+        o: The object to serialize.
+        format_type: Output format ('json' or 'yaml'), defaults to 'json'.
+        **kwargs: Additional options passed to the serializer.
 
     Returns:
-        A string representation in the specified format
+        A string representation in the specified format.
 
     Raises:
-        ValidationError: If format_type is unsupported
-        JSONError: If serialization fails
-
-    Note:
-        For backward compatibility with existing JSON-only usage:
-        - Defaults to JSON format when no format_type is specified
-        - Maintains the same behavior as the original JSON-only function
+        ValidationError: If format_type is unsupported or serialization fails.
     """
     if format_type.lower() == "json":
         return json_dumps(o)
@@ -103,127 +72,65 @@ def dumps(o: dict | list, format_type: str = "json", **kwargs) -> str:
         return yaml_dumps(o, **kwargs)
     else:
         raise exceptions.ValidationError(
-            f"Unsupported format type: {format_type}. Use 'json' or 'yaml'",
-            details={"format_type": format_type},
+            f"Unsupported format type: {format_type!r}. Use 'json' or 'yaml'."
         )
 
 
 def json_loads(s: str) -> dict | list:
-    """Convert a JSON formatted string to a dict or list object
-
-    Args:
-        s (str): The JSON object represented as a string
-
-    Returns:
-        A dict or list object
+    """Parse a JSON string into a dict or list.
 
     Raises:
-        JSONError: If JSON parsing fails
+        ValidationError: If JSON parsing fails.
     """
     try:
         return json.loads(s)
-    except json.JSONDecodeError as exc:
+    except (json.JSONDecodeError, Exception) as exc:
         logging.error(traceback.format_exc())
-        input_data = str(s)[:200] if s is not None else "None"
-        raise exceptions.JSONError(
-            f"Failed to parse JSON: {str(exc)}",
-            details={"input_data": input_data, "json_error": str(exc)},
-        ) from exc
-    except Exception as exc:
-        logging.error(traceback.format_exc())
-        input_data = str(s)[:200] if s is not None else "None"
-        raise exceptions.JSONError(
-            f"Unexpected error parsing JSON: {str(exc)}",
-            details={"input_data": input_data, "original_error": str(exc)},
-        ) from exc
+        raise exceptions.ValidationError(f"Failed to parse JSON: {exc}") from exc
 
 
 def json_dumps(o: dict | list) -> str:
-    """Convert a dict or list to a JSON string
-
-    Args:
-        o (list, dict): The list or dict object to dump to a string
-
-    Returns:
-        A JSON string representation
+    """Serialize a dict or list to a JSON string.
 
     Raises:
-        JSONError: If JSON serialization fails
+        ValidationError: If JSON serialization fails.
     """
     try:
         return json.dumps(o)
-    except (TypeError, ValueError) as exc:
+    except (TypeError, ValueError, Exception) as exc:
         logging.error(traceback.format_exc())
-        raise exceptions.JSONError(
-            f"Failed to serialize object to JSON: {str(exc)}",
-            details={"object_type": str(type(o)), "json_error": str(exc)},
-        ) from exc
-    except Exception as exc:
-        logging.error(traceback.format_exc())
-        raise exceptions.JSONError(
-            f"Unexpected error serializing JSON: {str(exc)}",
-            details={"object_type": str(type(o)), "original_error": str(exc)},
+        raise exceptions.ValidationError(
+            f"Failed to serialize object to JSON: {exc}"
         ) from exc
 
 
 def yaml_loads(s: str) -> dict | list:
-    """Convert a YAML formatted string to a dict or list object
-
-    Args:
-        s (str): The YAML object represented as a string
-
-    Returns:
-        A dict or list object
+    """Parse a YAML string into a dict or list.
 
     Raises:
-        ValidationError: If YAML support is not available
-        JSONError: If YAML parsing fails (for consistency with JSON errors)
+        ValidationError: If YAML support is not available or parsing fails.
     """
     if not YAML_AVAILABLE:
         raise exceptions.ValidationError(
-            "YAML support not available. Install PyYAML to use YAML functionality.",
-            details={"feature": "yaml_loads", "required_package": "PyYAML"},
+            "YAML support not available. Install PyYAML to enable YAML parsing."
         )
-
     try:
         return yaml.safe_load(s)
-    except yaml.YAMLError as exc:
+    except (yaml.YAMLError, Exception) as exc:
         logging.error(traceback.format_exc())
-        input_data = str(s)[:200] if s is not None else "None"
-        raise exceptions.JSONError(
-            f"Failed to parse YAML: {str(exc)}",
-            details={"input_data": input_data, "yaml_error": str(exc)},
-        ) from exc
-    except Exception as exc:
-        logging.error(traceback.format_exc())
-        input_data = str(s)[:200] if s is not None else "None"
-        raise exceptions.JSONError(
-            f"Unexpected error parsing YAML: {str(exc)}",
-            details={"input_data": input_data, "original_error": str(exc)},
-        ) from exc
+        raise exceptions.ValidationError(f"Failed to parse YAML: {exc}") from exc
 
 
 def yaml_dumps(o: dict | list, **kwargs) -> str:
-    """Convert a dict or list to a YAML string
-
-    Args:
-        o (list, dict): The list or dict object to dump to a string
-        **kwargs: Additional keyword arguments passed to yaml.dump()
-
-    Returns:
-        A YAML string representation
+    """Serialize a dict or list to a YAML string.
 
     Raises:
-        ValidationError: If YAML support is not available
-        JSONError: If YAML serialization fails (for consistency with JSON errors)
+        ValidationError: If YAML support is not available or serialization fails.
     """
     if not YAML_AVAILABLE:
         raise exceptions.ValidationError(
-            "YAML support not available. Install PyYAML to use YAML functionality.",
-            details={"feature": "yaml_dumps", "required_package": "PyYAML"},
+            "YAML support not available. Install PyYAML to enable YAML serialization."
         )
-
-    # Default YAML dump options for better formatting
     yaml_options = {
         "default_flow_style": False,
         "indent": 2,
@@ -231,18 +138,10 @@ def yaml_dumps(o: dict | list, **kwargs) -> str:
         "allow_unicode": True,
         **kwargs,
     }
-
     try:
         return yaml.dump(o, **yaml_options)
-    except yaml.YAMLError as exc:
+    except (yaml.YAMLError, Exception) as exc:
         logging.error(traceback.format_exc())
-        raise exceptions.JSONError(
-            f"Failed to serialize object to YAML: {str(exc)}",
-            details={"object_type": str(type(o)), "yaml_error": str(exc)},
-        ) from exc
-    except Exception as exc:
-        logging.error(traceback.format_exc())
-        raise exceptions.JSONError(
-            f"Unexpected error serializing YAML: {str(exc)}",
-            details={"object_type": str(type(o)), "original_error": str(exc)},
+        raise exceptions.ValidationError(
+            f"Failed to serialize object to YAML: {exc}"
         ) from exc
