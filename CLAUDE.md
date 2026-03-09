@@ -9,7 +9,7 @@
 - `client.py` — `Client` class with two `_Namespace` containers (`services`, `resources`). On init, scans `services/` and `resources/` directories via `importlib`, instantiates each `Service`/`Resource` class, and attaches it to the appropriate namespace by its `.name` attribute. All `**kwargs` pass through to `ipsdk.gateway_factory(want_async=True, **kwargs)`. `client.load(path, op)` is a filesystem bulk loader that dispatches to `service.load(data, op)` for any service that exposes one.
 - `services/` — 23 files covering all IAG API tag groups. Each file has one `Service(ServiceBase)` class. Methods call `self.client.{verb}(path)` and return `res.json()` — no logic. Pagination handled by the shared `ServiceBase._get_all(path, **params)` helper.
 - `resources/` — 22 files. Each has one `Resource(ResourceBase)` class that receives the `services` namespace as `self.services`. Implements declarative patterns: `ensure`/`absent` for CRUD, `run`/`dry_run` for execution, `load`/`dump` for bulk operations.
-- `serdes.py` — JSON/YAML serialization. JSON is tried first; YAML requires optional `PyYAML`. The `YAML_AVAILABLE` bool controls runtime behavior.
+- `serdes.py` — JSON/YAML/TOML serialization. JSON is tried first; YAML requires optional `PyYAML`; TOML uses stdlib `tomllib` (Python 3.11+) or `tomli` on 3.10. The `YAML_AVAILABLE` and `TOML_AVAILABLE` bools control runtime behavior.
 - `exceptions.py` — Exception hierarchy rooted at `AsyncGatewayError`. `classify_httpx_error` and `classify_http_status` map transport errors to typed exceptions. Aliases (`HTTPError`, `TimeoutError`, etc.) exist for backward compatibility.
 - `logger.py` — stdlib `logging` wrapper. **Default level is 100 (silent).** Enable with `asyncgateway.logger.set_level(logging.DEBUG)`.
 - `metadata.py` — Reads version from installed package metadata via `importlib.metadata`.
@@ -43,7 +43,7 @@
 
 ```bash
 uv sync --group dev              # install all deps including tox
-uv run pytest                    # run tests (all 200, ~0.4s)
+uv run pytest                    # run tests (all 686, ~0.4s)
 uv run pytest -v --cov           # with coverage
 tox                              # test across py310–py313
 tox -e py312                     # single version
@@ -75,7 +75,7 @@ CI runs on GitHub Actions (`.github/workflows/ci.yaml`) on push/PR to `main`/`de
 3. **`devices.delete_all()` in `services/devices.py` only deletes devices starting with `"router"`** — leftover test code that is still in the public API.
 4. **`__main__.py` is a stub** — prints a message and exits. No CLI.
 5. **`pyproject.toml` still lists `requires-python = ">=3.10"`** but `docs/development.md` says 3.8+. The latter is stale.
-6. **No resource-level tests** for the 22 new resource files. Current tests cover services and infrastructure only. All resource logic (ensure, absent, run, load) is untested.
+6. ~~**No resource-level tests**~~ — resolved in #6. Resource tests covering ensure, absent, run, load, and passthrough patterns are now included in the 686-test suite.
 7. **YAML errors raise `JSONError`** — intentional for consistency but confusing.
 8. **`Operation` docstring still refers to `client.devices.import_devices()`** — a method that no longer exists.
 

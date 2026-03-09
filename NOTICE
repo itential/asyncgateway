@@ -30,3 +30,13 @@ PyYAML (optional dependency)
   Copyright (c) 2017-2021 Ingy döt Net
   Copyright (c) 2006-2016 Kirill Simonov
   https://github.com/yaml/pyyaml
+
+tomli (optional dependency, Python < 3.11 only)
+  License: MIT
+  Copyright (c) 2021 Taneli Hukkinen
+  https://github.com/hukkin/tomli
+
+tomli-w (optional dependency)
+  License: MIT
+  Copyright (c) 2021 Taneli Hukkinen
+  https://github.com/hukkin/tomli-w
