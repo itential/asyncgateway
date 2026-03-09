@@ -20,6 +20,11 @@ h11
   Copyright (c) 2016 Nathaniel J. Smith and other contributors
   https://github.com/python-hyper/h11
 
+ipsdk
+  License: GPL-3.0-or-later
+  Copyright (c) Itential, Inc.
+  https://github.com/itential/ipsdk
+
 PyYAML (optional dependency)
   License: MIT
   Copyright (c) 2017-2021 Ingy döt Net
