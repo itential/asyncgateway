@@ -118,7 +118,7 @@ python_version = "3.11"
 warn_unused_configs = true
 
 [[tool.mypy.overrides]]
-module = ["ipsdk.*", "yaml"]
+module = ["ipsdk.*", "yaml", "tomli", "tomli_w"]
 ignore_missing_imports = true
 
 [tool.bandit]

@@ -362,7 +362,7 @@ class TestSerdesModule:
 
     def test_loads_invalid_hint(self):
         """Test loads with invalid format hint."""
-        invalid_hints = ["xml", "csv", "toml", "ini", ""]
+        invalid_hints = ["xml", "csv", "ini", ""]
 
         for hint in invalid_hints:
             if hint == "":  # Empty string hint is falsy, so no hint is processed
@@ -499,7 +499,7 @@ class TestSerdesModule:
 
     def test_dumps_invalid_format(self):
         """Test dumps with invalid format type."""
-        invalid_formats = ["xml", "csv", "toml", "ini", ""]
+        invalid_formats = ["xml", "csv", "ini", ""]
         data = {"name": "test"}
 
         for fmt in invalid_formats:
