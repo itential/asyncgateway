@@ -51,7 +51,7 @@ uv run ruff check src tests      # lint
 uv run ruff format src tests     # format
 uv run mypy src/                 # type check
 uv run bandit -r src/asyncgateway --configfile pyproject.toml  # security
-make premerge                    # lint + security + tests (full local CI)
+make ci                          # lint + security + tests (full local CI)
 ```
 
 CI runs on GitHub Actions (`.github/workflows/ci.yaml`) on push/PR to `main`/`devel`: lint → typecheck → security in parallel, then test matrix (py310–py313 via tox), plus a coverage job. Releases are published to PyPI via OIDC trusted publishing on `v*` tags.

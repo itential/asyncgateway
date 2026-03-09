@@ -31,12 +31,22 @@ TESTS := tests
 # Core
 # ------------------------------------------------------------------------------
 
-.PHONY: test coverage build
+.PHONY: install test coverage coverage-html build
+
+install: ## Install all dependencies including dev group
+	$(UV) sync --group dev
 
 test: ## Run unit tests
 	$(UV) run pytest $(TESTS)
 
-coverage: ## Run tests with coverage report
+coverage: ## Run tests with XML coverage report (matches CI output)
+	$(UV) run pytest \
+		--cov=$(SRC) \
+		--cov-report=term-missing \
+		--cov-report=xml \
+		$(TESTS)/
+
+coverage-html: ## Run tests with HTML coverage report (local browsing)
 	$(UV) run pytest \
 		--cov=$(SRC) \
 		--cov-report=term \
@@ -50,7 +60,7 @@ build: ## Build distribution packages (wheel + sdist)
 # Quality checks
 # ------------------------------------------------------------------------------
 
-.PHONY: lint format format-check security
+.PHONY: lint format format-check typecheck security
 
 lint: ## Lint with ruff
 	$(UV) run ruff check $(SRC) $(TESTS)
@@ -61,6 +71,9 @@ format: ## Format source files with ruff
 format-check: ## Check formatting without modifying files
 	$(UV) run ruff format --check $(SRC) $(TESTS)
 
+typecheck: ## Run static type analysis with mypy
+	$(UV) run mypy src/
+
 security: ## Run bandit security analysis
 	$(UV) run bandit -r $(SRC) --configfile pyproject.toml
 
@@ -70,7 +83,7 @@ security: ## Run bandit security analysis
 
 .PHONY: ci
 
-ci: clean lint security test ## Run all checks (required before committing)
+ci: format-check lint typecheck security tox ## Run all quality gates (matches CI pipeline)
 
 # ------------------------------------------------------------------------------
 # Tox (multi-version)
